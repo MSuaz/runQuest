@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Calendario – Demo</title>
+<style>
+  :root {
+    --bg: #0e1117;
+    --card: #131822;
+    --border: #1f2633;
+    --blue: #2961ff;
+    --text: #ffffff;
+    --text-muted: #9ca3af;
+    --radius: 12px;
+  }
+
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+      Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+    padding: 1rem;
+  }
+
+  /* ────────────────  TOP BAR  ──────────────── */
+  .top-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .top-bar button {
+    background: none;
+    border: none;
+    color: var(--text);
+    font-size: 1.25rem;
+    cursor: pointer;
+    padding: 0.35rem;
+  }
+
+  .top-bar select {
+    appearance: none;
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-weight: 600;
+    font-size: 1rem;
+    padding: 0.35rem 1.8rem 0.35rem 0.75rem;
+    border-radius: var(--radius);
+    position: relative;
+    cursor: pointer;
+  }
+  .top-bar select:focus {
+    outline: none;
+    border-color: var(--blue);
+  }
+  /* little chevron */
+  .top-bar select::after {
+    content: "▼";
+    position: absolute;
+    right: 0.75rem;
+    pointer-events: none;
+  }
+
+  /* ────────────────  DAYS SCROLLER  ──────────────── */
+  .days {
+    display: flex;
+    overflow-x: auto;
+    gap: 0.5rem;
+    padding: 0.75rem 0 1rem;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;          /* Firefox */
+  }
+  .days::-webkit-scrollbar {        /* Chrome, Safari */
+    display: none;
+  }
+
+  .day {
+    flex: 0 0 auto;
+    width: 64px;
+    text-align: center;
+    padding: 0.65rem 0;
+    border-radius: var(--radius);
+    cursor: pointer;
+    scroll-snap-align: start;
+    transition: background 0.2s;
+  }
+  .day:hover {
+    background: rgba(255,255,255,0.05);
+  }
+  .day.selected {
+    background: var(--blue);
+  }
+  .day .dow {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+  }
+  .day.selected .dow {
+    color: var(--text);
+  }
+  .day .date {
+    margin-top: 4px;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  /* ────────────────  DETAILS PANEL  ──────────────── */
+  .panel {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--card);
+    padding: 1.5rem;
+  }
+
+  .panel .headline {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1.25rem;
+  }
+  .panel .headline .bar {
+    width: 4px;
+    height: 24px;
+    background: var(--blue);
+    border-radius: 2px;
+  }
+  .panel .label {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+  }
+  .panel .date-string {
+    font-size: 1.25rem;
+    font-weight: 700;
+  }
+
+  .panel h2 {
+    margin-top: 1rem;
+    margin-bottom: 0.75rem;
+    font-size: 1.2rem;
+  }
+
+  .event {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem;
+    margin-bottom: 0.75rem;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .event:hover {
+    background: rgba(41, 97, 255, 0.08);
+  }
+  .event .time {
+    font-weight: 700;
+    color: var(--blue);
+    font-size: 0.9rem;
+  }
+  .event .title {
+    margin-top: 0.25rem;
+    font-size: 1.05rem;
+    font-weight: 600;
+  }
+  .event .desc {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+  }
+
+  .no-events {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin-top: 0.5rem;
+  }
+
+  .footer-note {
+    margin-top: 1rem;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    line-height: 1.4;
+  }
+
+  .version {
+    text-align: right;
+    margin-top: 2rem;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+  }
+</style>
+</head>
+<body>
+  <!-- ────────────────  HEADER  ──────────────── -->
+  <div class="top-bar">
+    <button id="prevMonth" aria-label="Mes anterior">⟨</button>
+
+    <button id="openPicker" aria-label="Abrir selector de fecha">📅</button>
+
+    <select id="monthSelect"></select>
+    <select id="yearSelect"></select>
+
+    <button id="nextMonth" aria-label="Mes siguiente">⟩</button>
+  </div>
+
+  <!-- ────────────────  DAYS  ──────────────── -->
+  <div class="days" id="daysContainer"></div>
+
+  <!-- ────────────────  PANEL  ──────────────── -->
+  <div class="panel">
+    <div class="headline">
+      <div class="bar"></div>
+      <div>
+        <div class="label">Fecha seleccionada</div>
+        <div class="date-string" id="selectedDateLabel">—</div>
+      </div>
+    </div>
+
+    <h2>Eventos programados</h2>
+    <div id="eventsContainer"></div>
+
+    <p class="footer-note">
+      Este es un ejemplo de layout maestro-detalle donde el calendario actúa como el componente maestro que controla el contenido del panel de detalles.
+    </p>
+  </div>
+
+  <div class="version">v1.0.1</div>
+
+<script>
+/*────────────────  DATA  ────────────────*/
+const monthNames = [
+  "enero","febrero","marzo","abril","mayo","junio",
+  "julio","agosto","septiembre","octubre","noviembre","diciembre"
+];
+const weekDayNames = ["Dom","Lun","Mar","Mié","Jue","Vie","Sáb"];
+
+// Simple demo-events map  (YYYY-MM-DD)
+const eventsMap = {
+  "2025-06-10": [
+    { time: "09:00", title: "Reunión del equipo", desc: "Revisión semanal del proyecto" },
+    { time: "13:00", title: "Almuerzo con cliente", desc: "Discusión de nuevos requerimientos" },
+    { time: "15:30", title: "Presentación", desc: "Demo del producto a stakeholders" }
+  ],
+  "2025-06-12": [
+    { time: "10:00", title: "Planeación", desc: "Plan de sprint" }
+  ]
+};
+
+/*────────────────  HELPERS  ────────────────*/
+const qs = (s, el = document) => el.querySelector(s);
+const qsa = (s, el = document) => [...el.querySelectorAll(s)];
+const pad = n => n.toString().padStart(2, "0");
+
+function formatDateISO(y,m,d){ return `${y}-${pad(m+1)}-${pad(d)}`; }
+
+function buildMonthOptions() {
+  const sel = qs('#monthSelect');
+  sel.innerHTML = monthNames.map((m, i) =>
+    `<option value="${i}">${m}</option>`).join('');
+}
+function buildYearOptions(yearRange=5){
+  const sel = qs('#yearSelect');
+  const current = new Date().getFullYear();
+  const years = [];
+  for(let y=current-1; y<=current+yearRange; y++) years.push(y);
+  sel.innerHTML = years.map(y=>`<option value="${y}">${y}</option>`).join('');
+}
+
+function buildDays(year, month){
+  const container = qs('#daysContainer');
+  container.innerHTML = '';
+  const first = new Date(year, month, 1);
+  const last = new Date(year, month+1, 0).getDate();
+
+  for(let day=1; day<=last; day++){
+    const dateObj = new Date(year, month, day);
+    const dow = weekDayNames[dateObj.getDay()];
+    const div = document.createElement('div');
+    div.className = 'day';
+    div.dataset.date = formatDateISO(year, month, day);
+    div.innerHTML = `
+      <div class="dow">${dow}</div>
+      <div class="date">${day}</div>
+    `;
+    container.appendChild(div);
+  }
+}
+
+function setSelectedDate(dateStr){
+  qsa('.day.selected').forEach(d=>d.classList.remove('selected'));
+  const dayEl = qs(`.day[data-date="${dateStr}"]`);
+  if(dayEl) dayEl.classList.add('selected');
+  qs('#selectedDateLabel').textContent = dateStr;
+  loadEvents(dateStr);
+}
+
+function loadEvents(dateStr){
+  const container = qs('#eventsContainer');
+  container.innerHTML = '';
+  const list = eventsMap[dateStr] || [];
+  if(!list.length){
+    container.innerHTML = `<div class="no-events">No hay eventos programados.</div>`;
+    return;
+  }
+  list.forEach(ev=>{
+    const div = document.createElement('div');
+    div.className = 'event';
+    div.innerHTML = `
+      <span class="time">${ev.time}</span>
+      <div class="title">${ev.title}</div>
+      <div class="desc">${ev.desc}</div>
+    `;
+    div.addEventListener('click', ()=>alert(`Has seleccionado: ${ev.title}`));
+    container.appendChild(div);
+  });
+}
+
+/*────────────────  INIT & EVENTS  ────────────────*/
+(function init(){
+  buildMonthOptions();
+  buildYearOptions();
+
+  const today = new Date("2025-06-10"); // Demo starting date
+  const monthSel = qs('#monthSelect');
+  const yearSel  = qs('#yearSelect');
+  monthSel.value = today.getMonth();
+  yearSel.value  = today.getFullYear();
+
+  function refreshDays(){ buildDays(+yearSel.value, +monthSel.value); }
+  refreshDays();
+
+  // select starting date after first render
+  requestAnimationFrame(()=>setSelectedDate(formatDateISO(today.getFullYear(), today.getMonth(), today.getDate())));
+
+  // Change month / year
+  monthSel.addEventListener('change', ()=>{ refreshDays(); scrollToStart(); });
+  yearSel.addEventListener('change',  ()=>{ refreshDays(); scrollToStart(); });
+
+  // Prev / Next buttons
+  qs('#prevMonth').addEventListener('click', ()=>{ changeMonth(-1); });
+  qs('#nextMonth').addEventListener('click', ()=>{ changeMonth(1); });
+
+  function changeMonth(offset){
+    let m = +monthSel.value + offset;
+    let y = +yearSel.value;
+    if(m < 0){ m = 11; y--; }
+    if(m > 11){ m = 0; y++; }
+    monthSel.value = m;
+    yearSel.value = y;
+    monthSel.dispatchEvent(new Event('change'));
+  }
+
+  // Click day
+  qs('#daysContainer').addEventListener('click', e=>{
+    const day = e.target.closest('.day');
+    if(day) setSelectedDate(day.dataset.date);
+  });
+
+  // optional: open native picker
+  qs('#openPicker').addEventListener('click', ()=>{
+    const curr = qs('#selectedDateLabel').textContent;
+    const input = document.createElement('input');
+    input.type = 'date';
+    input.value = curr;
+    input.style.opacity = 0;
+    document.body.appendChild(input);
+    input.addEventListener('change', ()=>{
+      const d = new Date(input.value);
+      monthSel.value = d.getMonth();
+      yearSel.value = d.getFullYear();
+      monthSel.dispatchEvent(new Event('change'));
+      setSelectedDate(formatDateISO(d.getFullYear(), d.getMonth(), d.getDate()));
+      document.body.removeChild(input);
+    });
+    input.click();
+  });
+
+  function scrollToStart(){
+    // Small helper to reset scroll on month change
+    qs('#daysContainer').scrollTo({left:0, behavior:'smooth'});
+  }
+})();
+</script>
+</body>
+</html>
+
