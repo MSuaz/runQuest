@@ -6,13 +6,15 @@
 <title>Calendario – Demo</title>
 <style>
   :root {
-    --bg: #0e1117;
-    --card: #131822;
-    --border: #1f2633;
-    --blue: #2961ff;
-    --text: #ffffff;
-    --text-muted: #9ca3af;
-    --radius: 12px;
+    --bg: #111109;
+    --card: #18180c;
+    --border: #ffd600;
+    --yellow: #ffd600;
+    --yellow-dark: #bfa800;
+    --text: #ffd600;
+    --text-muted: #fffbe0;
+    --radius: 18px;
+    --shadow: 0 2px 16px #0004;
   }
 
   * {
@@ -22,12 +24,12 @@
   }
 
   body {
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-      Helvetica, Arial, sans-serif;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     background: var(--bg);
     color: var(--text);
     -webkit-font-smoothing: antialiased;
     padding: 1rem;
+    min-height: 100vh;
   }
 
   /* ────────────────  TOP BAR  ──────────────── */
@@ -36,39 +38,46 @@
     align-items: center;
     gap: 0.75rem;
     margin-bottom: 0.5rem;
+    background: var(--card);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 0.5rem 0.7rem;
   }
 
   .top-bar button {
-    background: none;
+    background: var(--yellow);
     border: none;
-    color: var(--text);
+    color: #111109;
     font-size: 1.25rem;
     cursor: pointer;
-    padding: 0.35rem;
+    padding: 0.45rem 0.9rem;
+    border-radius: var(--radius);
+    font-weight: bold;
+    transition: background 0.18s;
+    box-shadow: 0 1px 6px #0002;
+  }
+  .top-bar button:active {
+    background: var(--yellow-dark);
   }
 
   .top-bar select {
     appearance: none;
-    background: none;
-    border: 1px solid var(--border);
-    color: var(--text);
+    background: #111109;
+    border: 2px solid var(--yellow);
+    color: var(--yellow);
     font-weight: 600;
     font-size: 1rem;
-    padding: 0.35rem 1.8rem 0.35rem 0.75rem;
+    padding: 0.45rem 2.2rem 0.45rem 0.9rem;
     border-radius: var(--radius);
     position: relative;
     cursor: pointer;
+    box-shadow: 0 1px 6px #0002;
+    margin-right: 0.1rem;
   }
   .top-bar select:focus {
     outline: none;
-    border-color: var(--blue);
-  }
-  /* little chevron */
-  .top-bar select::after {
-    content: "▼";
-    position: absolute;
-    right: 0.75rem;
-    pointer-events: none;
+    border-color: var(--yellow-dark);
+    background: #18180c;
   }
 
   /* ────────────────  DAYS SCROLLER  ──────────────── */
@@ -78,101 +87,124 @@
     gap: 0.5rem;
     padding: 0.75rem 0 1rem;
     scroll-snap-type: x mandatory;
-    scrollbar-width: none;          /* Firefox */
+    scrollbar-width: none;
   }
-  .days::-webkit-scrollbar {        /* Chrome, Safari */
+  .days::-webkit-scrollbar {
     display: none;
   }
 
   .day {
     flex: 0 0 auto;
-    width: 64px;
+    width: 56px;
     text-align: center;
-    padding: 0.65rem 0;
+    padding: 0.55rem 0;
     border-radius: var(--radius);
     cursor: pointer;
     scroll-snap-align: start;
-    transition: background 0.2s;
+    background: #18180c;
+    border: 2px solid transparent;
+    color: var(--yellow);
+    transition: background 0.2s, border 0.2s;
+    box-shadow: 0 1px 6px #0002;
   }
   .day:hover {
-    background: rgba(255,255,255,0.05);
+    background: #222211;
+    border-color: var(--yellow-dark);
   }
   .day.selected {
-    background: var(--blue);
+    background: var(--yellow);
+    color: #18180c;
+    border-color: var(--yellow-dark);
   }
   .day .dow {
     font-size: 0.75rem;
     color: var(--text-muted);
   }
   .day.selected .dow {
-    color: var(--text);
+    color: #18180c;
   }
   .day .date {
     margin-top: 4px;
     font-size: 1.25rem;
     font-weight: 700;
-    color: var(--text);
+    color: inherit;
   }
 
   /* ────────────────  DETAILS PANEL  ──────────────── */
   .panel {
-    border: 1px solid var(--border);
+    border: 2px solid var(--yellow);
     border-radius: var(--radius);
     background: var(--card);
-    padding: 1.5rem;
+    padding: 1.2rem;
+    box-shadow: var(--shadow);
+    margin-bottom: 1.2rem;
   }
 
   .panel .headline {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.7rem;
     margin-bottom: 1.25rem;
   }
   .panel .headline .bar {
-    width: 4px;
-    height: 24px;
-    background: var(--blue);
-    border-radius: 2px;
+    width: 5px;
+    height: 28px;
+    background: var(--yellow);
+    border-radius: 3px;
   }
   .panel .label {
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     color: var(--text-muted);
   }
   .panel .date-string {
-    font-size: 1.25rem;
+    font-size: 1.3rem;
     font-weight: 700;
+    color: var(--yellow);
   }
 
   .panel h2 {
     margin-top: 1rem;
     margin-bottom: 0.75rem;
     font-size: 1.2rem;
+    color: var(--yellow);
+    letter-spacing: 0.01em;
   }
 
   .event {
-    border: 1px solid var(--border);
+    border: 2px solid var(--yellow);
     border-radius: var(--radius);
     padding: 1rem;
     margin-bottom: 0.75rem;
     cursor: pointer;
-    transition: background 0.2s;
+    background: #18180c;
+    transition: background 0.2s, border 0.2s;
+    box-shadow: 0 1px 6px #0002;
   }
   .event:hover {
-    background: rgba(41, 97, 255, 0.08);
+    background: #222211;
+    border-color: var(--yellow-dark);
   }
   .event .time {
     font-weight: 700;
-    color: var(--blue);
-    font-size: 0.9rem;
+    color: var(--yellow);
+    font-size: 1.1rem;
+    background: #111109;
+    border-radius: 1em;
+    padding: 0.15em 0.8em;
+    display: inline-block;
+    margin-bottom: 0.3em;
+    box-shadow: 0 1px 4px #0002;
   }
   .event .title {
     margin-top: 0.25rem;
-    font-size: 1.05rem;
-    font-weight: 600;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--yellow);
   }
   .event .desc {
-    font-size: 0.9rem;
+    font-size: 0.97rem;
     color: var(--text-muted);
+    margin-bottom: 0.3em;
   }
 
   /* Session type badge styles */
@@ -180,32 +212,73 @@
     display: inline-flex;
     align-items: center;
     gap: 0.3em;
-    font-size: 0.85em;
+    font-size: 0.95em;
     font-weight: 600;
-    border-radius: 8px;
-    padding: 0.15em 0.6em 0.15em 0.4em;
+    border-radius: 10px;
+    padding: 0.18em 0.7em 0.18em 0.5em;
     margin-right: 0.5em;
     vertical-align: middle;
     letter-spacing: 0.01em;
+    background: var(--yellow);
+    color: #18180c;
+    box-shadow: 0 1px 4px #0002;
   }
   .badge-sunrise {
-    background: #ffe9b0;
-    color: #b97a00;
+    background: #ffe900;
+    color: #18180c;
   }
   .badge-interval {
-    background: #cce6ff;
-    color: #1a4a7a;
+    background: #fffbe0;
+    color: #bfa800;
   }
   .badge-recovery {
-    background: #d7ffe0;
-    color: #217a3b;
+    background: #fffbe0;
+    color: #18180c;
   }
   .event .capacity {
-    font-size: 0.85em;
-    color: var(--text-muted);
+    font-size: 0.95em;
+    color: var(--yellow);
     margin-top: 0.2em;
+    font-weight: 500;
   }
+
+  .event .btn {
+    background: var(--yellow);
+    color: #18180c;
+    border: none;
+    border-radius: var(--radius);
+    font-weight: bold;
+    font-size: 1em;
+    padding: 0.4em 1.2em;
+    cursor: pointer;
+    margin-right: 0.3em;
+    box-shadow: 0 1px 6px #0002;
+    transition: background 0.18s;
+  }
+  .event .btn:active {
+    background: var(--yellow-dark);
+  }
+  .event .btn.cancel {
+    background: #18180c;
+    color: var(--yellow);
+    border: 2px solid var(--yellow);
+  }
+  .event .btn.cancel:active {
+    background: #222211;
+    color: var(--yellow-dark);
+    border-color: var(--yellow-dark);
+  }
+  .event .btn[disabled] {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background: #bfa800;
+    color: #fffbe0;
+  }
+
   @media (max-width: 600px) {
+    .panel {
+      padding: 0.7rem;
+    }
     .event {
       padding: 0.7rem;
     }
@@ -213,12 +286,43 @@
       font-size: 1em;
     }
     .event .desc, .event .capacity {
-      font-size: 0.85em;
+      font-size: 0.9em;
+    }
+    .top-bar {
+      padding: 0.3rem 0.3rem;
+      gap: 0.4rem;
+    }
+    .top-bar button, .top-bar select {
+      font-size: 0.95rem;
+      padding: 0.3rem 0.7rem;
+    }
+    .day {
+      width: 44px;
+      padding: 0.35rem 0;
+    }
+  }
+  @media (max-width: 350px) {
+    .panel {
+      padding: 0.3rem;
+    }
+    .event {
+      padding: 0.4rem;
+    }
+    .top-bar {
+      padding: 0.1rem 0.1rem;
+      gap: 0.2rem;
+    }
+    .day {
+      width: 32px;
+      padding: 0.18rem 0;
+    }
+    .event .title, .event .desc, .event .capacity {
+      font-size: 0.8em;
     }
   }
 
   .no-events {
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     color: var(--text-muted);
     margin-top: 0.5rem;
   }
@@ -237,6 +341,91 @@
     color: var(--text-muted);
   }
 
+  /* Sidebar for roster */
+  .sidebar {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 320px;
+    max-width: 90vw;
+    height: 100vh;
+    background: #18180c;
+    border-left: 2px solid var(--yellow);
+    box-shadow: -2px 0 16px #0008;
+    z-index: 100;
+    padding: 1.5rem 1rem 1rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    transform: translateX(100%);
+    transition: transform 0.25s;
+    border-radius: 0 0 0 var(--radius);
+  }
+  .sidebar.open {
+    transform: translateX(0);
+  }
+  .sidebar h3 {
+    margin: 0 0 0.5em 0;
+    font-size: 1.1em;
+    color: var(--yellow);
+    letter-spacing: 0.01em;
+  }
+  .roster-list {
+    flex: 1;
+    overflow-y: auto;
+    margin-bottom: 1em;
+  }
+  .roster-item {
+    background: #111109;
+    border-radius: var(--radius);
+    padding: 0.7em 1em;
+    margin-bottom: 0.5em;
+    display: flex;
+    flex-direction: column;
+    gap: 0.1em;
+    font-size: 0.97em;
+    border: 2px solid var(--yellow);
+    color: var(--yellow);
+    box-shadow: 0 1px 6px #0002;
+  }
+  .roster-item .cancel-btn {
+    align-self: flex-end;
+    background: #18180c;
+    border: 2px solid var(--yellow);
+    color: var(--yellow);
+    font-size: 0.9em;
+    cursor: pointer;
+    margin-top: 0.2em;
+    border-radius: var(--radius);
+    padding: 0.2em 0.9em;
+    font-weight: bold;
+    transition: background 0.18s;
+  }
+  .roster-item .cancel-btn:active {
+    background: #222211;
+    color: var(--yellow-dark);
+    border-color: var(--yellow-dark);
+  }
+  .sidebar .close-btn {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: var(--yellow);
+    border: none;
+    color: #18180c;
+    font-size: 1.5em;
+    cursor: pointer;
+    border-radius: 50%;
+    width: 2em;
+    height: 2em;
+    box-shadow: 0 1px 6px #0002;
+    font-weight: bold;
+    transition: background 0.18s;
+  }
+  .sidebar .close-btn:active {
+    background: var(--yellow-dark);
+  }
+
   /* Modal styles */
   .modal-bg {
     position: fixed;
@@ -248,18 +437,19 @@
     justify-content: center;
   }
   .modal {
-    background: #181c25;
+    background: #18180c;
     border-radius: var(--radius);
     padding: 2rem 1.5rem 1.5rem 1.5rem;
     min-width: 320px;
     max-width: 95vw;
     box-shadow: 0 8px 32px #000c;
-    color: var(--text);
+    color: var(--yellow);
     position: relative;
+    border: 2px solid var(--yellow);
   }
   .modal h3 {
     margin-bottom: 1em;
-    color: var(--blue);
+    color: var(--yellow);
     font-size: 1.1em;
   }
   .modal label {
@@ -270,17 +460,19 @@
   }
   .modal input {
     width: 100%;
-    padding: 0.5em;
-    border-radius: 7px;
-    border: 1px solid var(--border);
-    background: #23293a;
-    color: var(--text);
+    padding: 0.6em;
+    border-radius: var(--radius);
+    border: 2px solid var(--yellow);
+    background: #111109;
+    color: var(--yellow);
     margin-bottom: 1em;
     font-size: 1em;
+    box-shadow: 0 1px 6px #0002;
   }
   .modal input:focus {
     outline: none;
-    border-color: var(--blue);
+    border-color: var(--yellow-dark);
+    background: #18180c;
   }
   .modal .modal-actions {
     display: flex;
@@ -289,18 +481,25 @@
   }
   .modal .btn {
     padding: 0.5em 1.2em;
-    border-radius: 7px;
+    border-radius: var(--radius);
     border: none;
     font-weight: 600;
     font-size: 1em;
     cursor: pointer;
-    background: var(--blue);
-    color: #fff;
+    background: var(--yellow);
+    color: #18180c;
     transition: background 0.2s;
+    box-shadow: 0 1px 6px #0002;
   }
   .modal .btn.cancel {
-    background: #23293a;
-    color: var(--text-muted);
+    background: #18180c;
+    color: var(--yellow);
+    border: 2px solid var(--yellow);
+  }
+  .modal .btn.cancel:active {
+    background: #222211;
+    color: var(--yellow-dark);
+    border-color: var(--yellow-dark);
   }
   .modal .error {
     color: #ff5c5c;
@@ -313,148 +512,20 @@
       padding: 1.2rem 0.7rem 1rem 0.7rem;
     }
   }
-
-  /* Real-time roster sidebar styles */
-  .live-roster-sidebar {
-    position: fixed;
-    top: 0;
-    right: 0;
-    width: 320px;
-    max-width: 95vw;
-    height: 100vh;
-    background: #181c25;
-    border-left: 1px solid var(--border);
-    box-shadow: -2px 0 16px #0008;
-    z-index: 300;
-    display: flex;
-    flex-direction: column;
-    padding: 1.2rem 1rem 1rem 1rem;
-    transition: transform 0.25s;
-  }
-  .live-roster-sidebar h3 {
-    margin: 0 0 1em 0;
-    font-size: 1.1em;
-    color: var(--blue);
-    letter-spacing: 0.01em;
-  }
-  .live-roster-list {
-    flex: 1;
-    overflow-y: auto;
-  }
-  .live-session-block {
-    margin-bottom: 1.2em;
-    background: #23293a;
-    border-radius: 10px;
-    padding: 0.7em 0.8em 0.5em 0.8em;
-  }
-  .live-session-title {
-    font-weight: 600;
-    font-size: 1em;
-    margin-bottom: 0.4em;
-    color: var(--blue);
-    display: flex;
-    align-items: center;
-    gap: 0.5em;
-  }
-  .live-session-time {
-    font-size: 0.97em;
-    color: var(--text-muted);
-    margin-bottom: 0.5em;
-  }
-  .live-participants {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5em;
-  }
-  .live-avatar {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    background: #222c3a;
-    color: #fff;
-    font-weight: 700;
-    font-size: 1em;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: 2px solid var(--border);
-    box-shadow: 0 1px 4px #0003;
-    margin-bottom: 0.2em;
-  }
-  .live-avatar[data-type="Sunrise Tempo"] { background: #ffe9b0; color: #b97a00; }
-  .live-avatar[data-type="Interval Blast"] { background: #cce6ff; color: #1a4a7a; }
-  .live-avatar[data-type="Recovery Jog"] { background: #d7ffe0; color: #217a3b; }
-  .live-participant-name {
-    font-size: 0.93em;
-    color: var(--text-muted);
-    margin-top: 0.1em;
-    text-align: center;
-    width: 100%;
-  }
-  .live-roster-sidebar .close-btn {
-    display: none;
-  }
-  @media (max-width: 900px) {
-    .live-roster-sidebar {
-      width: 100vw;
-      max-width: 100vw;
-      border-radius: 0;
-      padding-top: 1.2rem;
-      transform: translateX(100%);
-      position: fixed;
-    }
-    .live-roster-sidebar.open {
-      transform: translateX(0);
-    }
-    .live-roster-sidebar .close-btn {
-      display: block;
-      position: absolute;
-      top: 1rem;
-      right: 1rem;
-      background: none;
-      border: none;
-      color: var(--text-muted);
-      font-size: 1.5em;
-      cursor: pointer;
-    }
-  }
-  @media (max-width: 600px) {
-    .live-roster-sidebar {
-      padding: 1rem 0.5rem 0.5rem 0.5rem;
-    }
-  }
-  .open-roster-btn {
-    display: none;
-    position: fixed;
-    right: 1.2rem;
-    bottom: 1.2rem;
-    z-index: 350;
-    background: var(--blue);
-    color: #fff;
-    border: none;
-    border-radius: 50%;
-    width: 54px;
-    height: 54px;
-    font-size: 2em;
-    box-shadow: 0 2px 12px #000a;
-    cursor: pointer;
-  }
-  @media (max-width: 900px) {
-    .open-roster-btn {
-      display: block;
-    }
-    .live-roster-sidebar {
-      box-shadow: -2px 0 16px #000a;
+  @media (max-width: 350px) {
+    .modal {
+      min-width: 98vw;
+      padding: 0.5rem 0.2rem 0.2rem 0.2rem;
     }
   }
 
-  /* ────────────────  RESPONSIVE CLOCK COMPONENT  ──────────────── */
+  /* Responsive clock/timer component */
   .clock {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: #111;
-    color: #ffd600;
+    background: #111109;
+    color: var(--yellow);
     border-radius: 2em;
     font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
     font-weight: bold;
@@ -465,20 +536,10 @@
     font-size: 2.2em;
     box-shadow: 0 2px 12px #0003;
     margin: 0.5em auto;
-    border: 2px solid #ffd600;
+    border: 2px solid var(--yellow);
     transition: font-size 0.2s, padding 0.2s;
     user-select: none;
   }
-  /* For session time indicator inside event cards */
-  .event .clock {
-    font-size: 1.3em;
-    min-width: 2.5em;
-    min-height: 1.5em;
-    padding: 0.15em 0.7em;
-    margin: 0.2em 0 0.5em 0;
-  }
-
-  /* Smartwatch/compact device */
   @media (max-width: 350px) {
     .clock {
       font-size: 1.1em;
@@ -488,7 +549,6 @@
       border-width: 1.5px;
     }
   }
-  /* Small phone */
   @media (max-width: 500px) {
     .clock {
       font-size: 1.4em;
@@ -497,7 +557,6 @@
       min-height: 1.2em;
     }
   }
-  /* Tablet */
   @media (min-width: 501px) and (max-width: 900px) {
     .clock {
       font-size: 1.8em;
@@ -506,7 +565,6 @@
       min-height: 1.7em;
     }
   }
-  /* Desktop */
   @media (min-width: 901px) {
     .clock {
       font-size: 2.2em;
@@ -515,8 +573,6 @@
       min-height: 2.2em;
     }
   }
-
-  /* ...existing code... */
 </style>
 </head>
 <body>
@@ -555,7 +611,14 @@
 
   <div class="version">v1.0.1</div>
 
-  <!-- Modal for registration -->
+  <!-- Sidebar for roster -->
+  <div class="sidebar" id="rosterSidebar">
+    <button class="close-btn" id="closeRoster" title="Cerrar">&times;</button>
+    <h3 id="rosterTitle">Participantes</h3>
+    <div class="roster-list" id="rosterList"></div>
+  </div>
+
+  <!-- Modal for sign-up -->
   <div class="modal-bg" id="signupModalBg" style="display:none;">
     <div class="modal" id="signupModal">
       <h3>Reserva tu plaza</h3>
@@ -574,14 +637,6 @@
       </form>
     </div>
   </div>
-
-  <!-- Real-time roster sidebar -->
-  <button class="open-roster-btn" id="openLiveRosterBtn" title="Ver quién está corriendo" style="display:none;">👥</button>
-  <aside class="live-roster-sidebar" id="liveRosterSidebar">
-    <button class="close-btn" id="closeLiveRosterBtn" title="Cerrar">&times;</button>
-    <h3>Corredores en sesiones activas</h3>
-    <div class="live-roster-list" id="liveRosterList"></div>
-  </aside>
 
 <script>
 /*────────────────  DATA  ────────────────*/
@@ -637,34 +692,18 @@ const eventsMap = {
 };
 
 /*────────────────  ROSTER STORAGE  ────────────────*/
-// Store roster as { "date|time": [ {name, email, emergency} ] }
 function getRosterKey(dateStr, time) {
-  return `${dateStr}|${time}`;
+  return `roster_${dateStr}_${time}`;
 }
 function getRoster(dateStr, time) {
-  const key = getRosterKey(dateStr, time);
   try {
-    return JSON.parse(localStorage.getItem('roster_' + key)) || [];
-  } catch { return []; }
-}
-function setRoster(dateStr, time, roster) {
-  const key = getRosterKey(dateStr, time);
-  localStorage.setItem('roster_' + key, JSON.stringify(roster));
-}
-function isUserSignedUp(dateStr, time, email) {
-  return getRoster(dateStr, time).some(r => r.email === email);
-}
-function signupForSession(dateStr, time, name, email, emergency) {
-  const roster = getRoster(dateStr, time);
-  if (!roster.some(r => r.email === email)) {
-    roster.push({ name, email, emergency });
-    setRoster(dateStr, time, roster);
+    return JSON.parse(localStorage.getItem(getRosterKey(dateStr, time))) || [];
+  } catch {
+    return [];
   }
 }
-function cancelSignup(dateStr, time, email) {
-  let roster = getRoster(dateStr, time);
-  roster = roster.filter(r => r.email !== email);
-  setRoster(dateStr, time, roster);
+function setRoster(dateStr, time, roster) {
+  localStorage.setItem(getRosterKey(dateStr, time), JSON.stringify(roster));
 }
 
 /*────────────────  HELPERS  ────────────────*/
@@ -730,12 +769,10 @@ function loadEvents(dateStr){
       const { badgeClass, icon } = sessionTypeMap[ev.type];
       badge = `<span class="event-badge ${badgeClass}">${icon} ${ev.type}</span>`;
     }
-    // Capacity calculation
     const roster = getRoster(dateStr, ev.time);
-    const spotsLeft = ev.capacity !== undefined ? ev.capacity - roster.length : null;
-    const capacity = ev.capacity !== undefined
-      ? `<div class="capacity">Plazas libres: <b>${spotsLeft}</b> / ${ev.capacity}</div>`
-      : "";
+    const spotsLeft = ev.capacity - roster.length;
+    const capacity = `<div class="capacity">Capacidad: ${roster.length}/${ev.capacity} (${spotsLeft > 0 ? spotsLeft + ' libres' : 'completo'})</div>`;
+    // Check if user is signed up (by email in localStorage, for demo just show sign up always)
     const div = document.createElement('div');
     div.className = 'event';
     div.innerHTML = `
@@ -744,40 +781,72 @@ function loadEvents(dateStr){
       <div class="title">${ev.title}</div>
       <div class="desc">${ev.desc || ""}</div>
       ${capacity}
+      <div style="margin-top:0.5em;display:flex;gap:0.7em;">
+        <button class="btn" style="background:var(--blue);color:#fff;font-size:0.97em;padding:0.3em 1em;" ${spotsLeft<=0?'disabled':''}>Reservar</button>
+        <button class="btn cancel" style="font-size:0.97em;padding:0.3em 1em;">Ver participantes</button>
+      </div>
     `;
-    // Open modal on click
-    div.addEventListener('click', ()=>openSignupModal(ev, dateStr));
+    // Sign up button
+    div.querySelector('.btn:not(.cancel)').onclick = () => {
+      openSignupModal(dateStr, ev);
+    };
+    // Roster button
+    div.querySelector('.btn.cancel').onclick = () => {
+      openRosterSidebar(dateStr, ev);
+    };
     container.appendChild(div);
   });
 }
 
-function openSignupModal(ev, dateStr) {
-  signupSession = { ...ev, dateStr };
+/*────────────────  ROSTER SIDEBAR  ────────────────*/
+let currentRosterSession = null;
+function openRosterSidebar(dateStr, ev) {
+  currentRosterSession = { dateStr, time: ev.time };
+  qs('#rosterTitle').textContent = `Participantes – ${ev.title} (${ev.time})`;
+  renderRosterList(dateStr, ev.time);
+  qs('#rosterSidebar').classList.add('open');
+}
+function closeRosterSidebar() {
+  qs('#rosterSidebar').classList.remove('open');
+  currentRosterSession = null;
+}
+function renderRosterList(dateStr, time) {
+  const list = getRoster(dateStr, time);
+  const container = qs('#rosterList');
+  if (!list.length) {
+    container.innerHTML = `<div style="color:var(--text-muted);font-size:0.97em;">No hay participantes aún.</div>`;
+    return;
+  }
+  container.innerHTML = '';
+  list.forEach((runner, idx) => {
+    const div = document.createElement('div');
+    div.className = 'roster-item';
+    div.innerHTML = `
+      <div><b>${runner.name}</b></div>
+      <div style="font-size:0.93em;color:var(--text-muted);">${runner.email}</div>
+      <div style="font-size:0.93em;color:var(--text-muted);">Emergencia: ${runner.emergency}</div>
+      <button class="cancel-btn" data-idx="${idx}">Cancelar</button>
+    `;
+    div.querySelector('.cancel-btn').onclick = () => {
+      cancelSignup(dateStr, time, runner.email);
+    };
+    container.appendChild(div);
+  });
+}
+
+/*────────────────  SIGNUP MODAL  ────────────────*/
+let signupSession = null;
+function openSignupModal(dateStr, ev) {
+  signupSession = { dateStr, ev };
   qs('#signupModalBg').style.display = '';
-  // If user has signed up, show cancel UI
-  const roster = getRoster(dateStr, ev.time);
-  let user = null;
-  if (lastSignupEmail) {
-    user = roster.find(r => r.email === lastSignupEmail);
-  }
-  // Try to prefill with last used email if available
-  qs('#signupName').value = user ? user.name : '';
-  qs('#signupEmail').value = user ? user.email : lastSignupEmail;
-  qs('#signupEmergency').value = user ? user.emergency : '';
+  qs('#signupName').value = '';
+  qs('#signupEmail').value = '';
+  qs('#signupEmergency').value = '';
   qs('#signupError').style.display = 'none';
-  // Show/hide form/cancel
-  if (user) {
-    qs('#signupForm').style.display = 'none';
-    showCancelReservationUI(user);
-  } else {
-    qs('#signupForm').style.display = '';
-    hideCancelReservationUI();
-  }
 }
 function closeSignupModal() {
   qs('#signupModalBg').style.display = 'none';
   signupSession = null;
-  hideCancelReservationUI();
 }
 function showSignupError(msg) {
   const err = qs('#signupError');
@@ -785,53 +854,7 @@ function showSignupError(msg) {
   err.style.display = '';
 }
 
-/*───── Cancel Reservation UI in Modal ─────*/
-function showCancelReservationUI(user) {
-  let cancelDiv = qs('#cancelReservationDiv');
-  if (!cancelDiv) {
-    cancelDiv = document.createElement('div');
-    cancelDiv.id = 'cancelReservationDiv';
-    cancelDiv.style = 'margin:1em 0;text-align:center;';
-    qs('#signupModal').appendChild(cancelDiv);
-  }
-  cancelDiv.innerHTML = `
-    <div style="margin-bottom:1em;">
-      Ya tienes una reserva para esta sesión.<br>
-      <b>${user.name}</b> (${user.email})
-    </div>
-    <button class="btn" id="cancelReservationBtn" style="background:#ff5c5c;color:#fff;">Cancelar reserva</button>
-  `;
-  qs('#cancelReservationBtn').onclick = function() {
-    if (confirm('¿Seguro que quieres cancelar tu reserva?')) {
-      cancelSignup(signupSession.dateStr, signupSession.time, user.email);
-      lastSignupEmail = user.email;
-      closeSignupModal();
-      updateLiveRosterSidebar();
-      loadEvents(signupSession.dateStr);
-      showToast('Reserva cancelada.');
-    }
-  };
-}
-function hideCancelReservationUI() {
-  const cancelDiv = qs('#cancelReservationDiv');
-  if (cancelDiv) cancelDiv.remove();
-}
-
-/*───── Toast/Confirmation ─────*/
-function showToast(msg) {
-  let toast = qs('#toastMsg');
-  if (!toast) {
-    toast = document.createElement('div');
-    toast.id = 'toastMsg';
-    toast.style = 'position:fixed;left:50%;bottom:2.5rem;transform:translateX(-50%);background:#23293a;color:#fff;padding:0.8em 1.5em;border-radius:10px;box-shadow:0 2px 12px #000a;font-size:1em;z-index:9999;opacity:0;transition:opacity 0.2s;';
-    document.body.appendChild(toast);
-  }
-  toast.textContent = msg;
-  toast.style.opacity = '1';
-  setTimeout(()=>{ toast.style.opacity = '0'; }, 1800);
-}
-
-// --- Validation helpers ---
+/*────────────────  VALIDATION HELPERS  ────────────────*/
 function validateEmail(email) {
   return /^[^@]+@[^@]+\.[^@]+$/.test(email);
 }
@@ -840,48 +863,37 @@ function validatePhone(phone) {
   return /^[\d\s\-()+]{7,}$/.test(phone);
 }
 
-// --- Modal events ---
-qs('#cancelSignup').onclick = closeSignupModal;
-qs('#signupForm').onsubmit = function(e) {
-  e.preventDefault();
-  const name = qs('#signupName').value.trim();
-  const email = qs('#signupEmail').value.trim();
-  const emergency = qs('#signupEmergency').value.trim();
-  if (!name || !email || !emergency) {
-    showSignupError('Por favor, completa todos los campos.');
-    return;
-  }
-  if (!validateEmail(email)) {
-    showSignupError('Introduce un email válido.');
-    return;
-  }
-  if (!validatePhone(emergency)) {
-    showSignupError('Introduce un número de contacto válido.');
-    return;
-  }
-  // Check if already signed up
-  const { dateStr, time } = signupSession;
-  if (isUserSignedUp(dateStr, time, email)) {
-    showSignupError('Ya tienes una reserva para esta sesión.');
-    return;
-  }
-  // Check capacity
-  const ev = signupSession;
-  const roster = getRoster(dateStr, time);
-  if (ev.capacity !== undefined && roster.length >= ev.capacity) {
+/*────────────────  SIGNUP LOGIC  ────────────────*/
+function signupForSession(name, email, emergency) {
+  const { dateStr, ev } = signupSession;
+  let roster = getRoster(dateStr, ev.time);
+  if (roster.length >= ev.capacity) {
     showSignupError('No quedan plazas disponibles.');
     return;
   }
-  signupForSession(dateStr, time, name, email, emergency);
-  lastSignupEmail = email;
+  if (roster.some(r => r.email.toLowerCase() === email.toLowerCase())) {
+    showSignupError('Ya estás inscrito en esta sesión.');
+    return;
+  }
+  roster.push({ name, email, emergency });
+  setRoster(dateStr, ev.time, roster);
   closeSignupModal();
-  updateLiveRosterSidebar();
-  loadEvents(dateStr);
-  showToast('¡Registro exitoso para ' + ev.title + '!');
-};
-qs('#signupModalBg').onclick = function(e) {
-  if (e.target === this) closeSignupModal();
-};
+  renderRosterList(dateStr, ev.time);
+  // Update event list UI
+  if (qs('.day.selected')?.dataset.date === dateStr) loadEvents(dateStr);
+}
+
+/*────────────────  CANCEL LOGIC  ────────────────*/
+function cancelSignup(dateStr, time, email) {
+  let roster = getRoster(dateStr, time);
+  roster = roster.filter(r => r.email.toLowerCase() !== email.toLowerCase());
+  setRoster(dateStr, time, roster);
+  if (currentRosterSession && currentRosterSession.dateStr === dateStr && currentRosterSession.time === time) {
+    renderRosterList(dateStr, time);
+  }
+  // Update event list UI
+  if (qs('.day.selected')?.dataset.date === dateStr) loadEvents(dateStr);
+}
 
 /*────────────────  INIT & EVENTS  ────────────────*/
 (function init(){
@@ -947,98 +959,83 @@ qs('#signupModalBg').onclick = function(e) {
     // Small helper to reset scroll on month change
     qs('#daysContainer').scrollTo({left:0, behavior:'smooth'});
   }
+
+  // Sidebar close
+  qs('#closeRoster').onclick = closeRosterSidebar;
+
+  // Modal cancel
+  qs('#cancelSignup').onclick = closeSignupModal;
+
+  // Modal submit
+  qs('#signupForm').onsubmit = function(e) {
+    e.preventDefault();
+    const name = qs('#signupName').value.trim();
+    const email = qs('#signupEmail').value.trim();
+    const emergency = qs('#signupEmergency').value.trim();
+    if (!name || !email || !emergency) {
+      showSignupError('Por favor, completa todos los campos.');
+      return;
+    }
+    if (!validateEmail(email)) {
+      showSignupError('Introduce un email válido.');
+      return;
+    }
+    if (!validatePhone(emergency)) {
+      showSignupError('Introduce un número de contacto válido.');
+      return;
+    }
+    signupForSession(name, email, emergency);
+  };
+
+  // Close modal on background click
+  qs('#signupModalBg').onclick = function(e) {
+    if (e.target === this) closeSignupModal();
+  };
 })();
-  
-// --- Real-time roster sidebar logic ---
-function getAllActiveSessions() {
-  // Returns [{dateStr, ev, roster}]
-  const sessions = [];
-  Object.entries(eventsMap).forEach(([dateStr, events]) => {
-    events.forEach(ev => {
-      const roster = getRoster(dateStr, ev.time);
-      if (roster.length > 0) {
-        sessions.push({ dateStr, ev, roster });
-      }
-    });
-  });
-  return sessions;
-}
-function getInitials(name) {
-  return name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
-}
-function renderLiveRosterSidebar() {
-  const container = qs('#liveRosterList');
-  const sessions = getAllActiveSessions();
-  if (!sessions.length) {
-    container.innerHTML = `<div style="color:var(--text-muted);font-size:0.97em;">No hay corredores inscritos en ninguna sesión activa.</div>`;
+
+/*────────────────  OVERRIDE loadEvents  ────────────────*/
+function loadEvents(dateStr){
+  const container = qs('#eventsContainer');
+  container.innerHTML = '';
+  const list = eventsMap[dateStr] || [];
+  if(!list.length){
+    container.innerHTML = `<div class="no-events">No hay eventos programados.</div>`;
     return;
   }
-  container.innerHTML = '';
-  sessions.forEach(({dateStr, ev, roster}) => {
-    const block = document.createElement('div');
-    block.className = 'live-session-block';
-    block.innerHTML = `
-      <div class="live-session-title">
-        ${sessionTypeMap[ev.type]?.icon || ''} ${ev.title}
+  list.forEach(ev=>{
+    // Session badge
+    let badge = "";
+    if (ev.type && sessionTypeMap[ev.type]) {
+      const { badgeClass, icon } = sessionTypeMap[ev.type];
+      badge = `<span class="event-badge ${badgeClass}">${icon} ${ev.type}</span>`;
+    }
+    const roster = getRoster(dateStr, ev.time);
+    const spotsLeft = ev.capacity - roster.length;
+    const capacity = `<div class="capacity">Capacidad: ${roster.length}/${ev.capacity} (${spotsLeft > 0 ? spotsLeft + ' libres' : 'completo'})</div>`;
+    const div = document.createElement('div');
+    div.className = 'event';
+    div.innerHTML = `
+      <span class="time">${ev.time}</span>
+      ${badge}
+      <div class="title">${ev.title}</div>
+      <div class="desc">${ev.desc || ""}</div>
+      ${capacity}
+      <div style="margin-top:0.5em;display:flex;gap:0.7em;">
+        <button class="btn" style="background:var(--blue);color:#fff;font-size:0.97em;padding:0.3em 1em;" ${spotsLeft<=0?'disabled':''}>Reservar</button>
+        <button class="btn cancel" style="font-size:0.97em;padding:0.3em 1em;">Ver participantes</button>
       </div>
-      <div class="live-session-time">${dateStr} &bull; ${ev.time}</div>
-      <div class="live-participants"></div>
     `;
-    const partDiv = block.querySelector('.live-participants');
-    roster.forEach(runner => {
-      const avatar = document.createElement('div');
-      avatar.className = 'live-avatar';
-      avatar.dataset.type = ev.type;
-      avatar.title = runner.name;
-      avatar.textContent = getInitials(runner.name);
-      partDiv.appendChild(avatar);
-    });
-    block.appendChild(partDiv);
-    container.appendChild(block);
+    // Sign up button
+    div.querySelector('.btn:not(.cancel)').onclick = () => {
+      openSignupModal(dateStr, ev);
+    };
+    // Roster button
+    div.querySelector('.btn.cancel').onclick = () => {
+      openRosterSidebar(dateStr, ev);
+    };
+    container.appendChild(div);
   });
 }
-function openLiveRosterSidebar() {
-  qs('#liveRosterSidebar').classList.add('open');
-}
-function closeLiveRosterSidebar() {
-  qs('#liveRosterSidebar').classList.remove('open');
-}
-function updateLiveRosterSidebar() {
-  renderLiveRosterSidebar();
-}
-function setupLiveRosterSidebar() {
-  renderLiveRosterSidebar();
-  // Show/hide sidebar on mobile
-  const openBtn = qs('#openLiveRosterBtn');
-  const sidebar = qs('#liveRosterSidebar');
-  const closeBtn = qs('#closeLiveRosterBtn');
-  function handleResize() {
-    if (window.innerWidth <= 900) {
-      openBtn.style.display = 'block';
-      sidebar.classList.remove('open');
-    } else {
-      openBtn.style.display = 'none';
-      sidebar.classList.add('open');
-    }
-  }
-  openBtn.onclick = openLiveRosterSidebar;
-  closeBtn.onclick = closeLiveRosterSidebar;
-  window.addEventListener('resize', handleResize);
-  handleResize();
-}
-setupLiveRosterSidebar();
-
-// --- Patch signup/cancel to update sidebar ---
-const _signupForSession = signupForSession;
-signupForSession = function(name, email, emergency) {
-  _signupForSession(name, email, emergency);
-  updateLiveRosterSidebar();
-};
-const _cancelSignup = cancelSignup;
-cancelSignup = function(dateStr, time, email) {
-  _cancelSignup(dateStr, time, email);
-  updateLiveRosterSidebar();
-};
 </script>
 </body>
 </html>
