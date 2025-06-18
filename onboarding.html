@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Onboarding</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="onboarding">
+    <!-- Progress Bar -->
+    <div id="progress-bar">
+      <div id="progress"></div>
+    </div>
+
+    <!-- Step 1: Welcome -->
+    <section id="welcome" class="step">
+      <div class="logo"></div>
+      <h1>Welcome to your new journey as a runner</h1>
+      <p>Let's set up your profile to get started.</p>
+      <button class="primary-btn" onclick="nextStep()">Start</button>
+    </section>
+
+    <!-- Step 2: Main Goal -->
+    <section id="goal" class="step hidden">
+      <h2>What is your main goal for running?</h2>
+      <div class="options">
+        <button class="option" onclick="selectOption(this)">Health</button>
+        <button class="option" onclick="selectOption(this)">Competition</button>
+        <button class="option" onclick="selectOption(this)">Relaxation</button>
+        <button class="option" onclick="selectOption(this)">Social</button>
+        <button class="option" onclick="selectOption(this)">Other</button>
+      </div>
+      <button class="primary-btn" onclick="nextStep()">Next</button>
+    </section>
+
+    <!-- Step 3: Weekly Frequency -->
+    <section id="frequency" class="step hidden">
+      <h2>How many days per week do you currently run?</h2>
+      <div class="bubble-selector">
+        <div class="bubble" onclick="selectBubble(this)">0</div>
+        <div class="bubble" onclick="selectBubble(this)">1</div>
+        <div class="bubble" onclick="selectBubble(this)">2</div>
+        <div class="bubble" onclick="selectBubble(this)">3</div>
+        <div class="bubble" onclick="selectBubble(this)">4</div>
+        <div class="bubble" onclick="selectBubble(this)">5</div>
+        <div class="bubble" onclick="selectBubble(this)">6</div>
+        <div class="bubble" onclick="selectBubble(this)">7</div>
+      </div>
+      <button class="primary-btn" onclick="nextStep()">Next</button>
+    </section>
+
+    <!-- Step 4: Preferred Surface -->
+    <section id="surface" class="step hidden">
+      <h2>What surface do you prefer?</h2>
+      <div class="surface-options">
+        <div class="surface" data-surface="asphalt" onclick="selectSurface(this)"></div>
+        <div class="surface" data-surface="track" onclick="selectSurface(this)"></div>
+        <div class="surface" data-surface="mountain" onclick="selectSurface(this)"></div>
+        <div class="surface" data-surface="beach" onclick="selectSurface(this)"></div>
+      </div>
+      <button class="primary-btn" onclick="nextStep()">Next</button>
+    </section>
+
+    <!-- Step 5: Current Apps -->
+    <section id="apps" class="step hidden">
+      <h2>Do you use any app currently?</h2>
+      <div class="app-options">
+        <button class="app" onclick="selectApp(this)">Strava</button>
+        <button class="app" onclick="selectApp(this)">Garmin</button>
+        <button class="app" onclick="selectApp(this)">Apple Health</button>
+        <button class="app" onclick="selectApp(this)">None</button>
+      </div>
+      <button class="primary-btn" onclick="nextStep()">Next</button>
+    </section>
+
+    <!-- Step 6: Name and Motivation -->
+    <section id="motivation" class="step hidden">
+      <h2>What is your name and what motivates you?</h2>
+      <input type="text" placeholder="Your name" id="name-input">
+      <textarea placeholder="Your motivation"></textarea>
+      <button class="primary-btn" onclick="finishOnboarding()">Finish</button>
+    </section>
+
+    <!-- Final Screen -->
+    <section id="final" class="step hidden">
+      <h1>Your route is ready, <span id="user-name"></span>. Run with purpose.</h1>
+      <button class="primary-btn">Start your first challenge</button>
+    </section>
+  </div>
+  <script src="scripts.js"></script>
+</body>
+</html>
