@@ -71,7 +71,7 @@ body {
   width: 0;
   height: 100%;
   background: linear-gradient(90deg, #FFD700, #FF4500);
-  transition: width 300ms ease;
+  transition: width 300ms ease, background-color 300ms ease;
 }
 
 .step {
@@ -82,6 +82,10 @@ body {
 
 .step.active {
   display: block;
+}
+
+.step.hidden {
+  display: none;
 }
 
 .primary-btn {
@@ -120,13 +124,60 @@ body {
   color: #FFFFFF;
 }
 
+.bubble {
+  display: inline-block;
+  width: 40px;
+  height: 40px;
+  line-height: 40px;
+  text-align: center;
+  border: 2px solid #FFD700;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: transform 200ms ease, background-color 300ms ease, color 300ms ease;
+}
+
+.bubble:hover {
+  transform: scale(1.1);
+  background: linear-gradient(90deg, #FFD700, #FF4500);
+  color: #FFFFFF;
+}
+
+.bubble.selected {
+  background: linear-gradient(90deg, #FFD700, #FF4500);
+  color: #FFFFFF;
+}
+
+.surface {
+  display: inline-block;
+  width: 60px;
+  height: 60px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 2px solid #FFD700;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 200ms ease, background-color 300ms ease;
+}
+
+.surface:hover {
+  transform: scale(1.1);
+  background: linear-gradient(90deg, #FFD700, #FF4500);
+}
+
+.surface.selected {
+  background: linear-gradient(90deg, #FFD700, #FF4500);
+}
+
 #error-box {
   color: #FF4500;
   font-size: 14px;
   margin-top: 10px;
   visibility: hidden;
   opacity: 0;
-  transition: opacity 300ms ease;
+  text-align: center;
+  background: rgba(255, 69, 0, 0.1);
+  padding: 10px;
+  border-radius: 8px;
+  transition: opacity 300ms ease, visibility 300ms ease;
 }
 
 #error-box.visible {
@@ -173,6 +224,27 @@ body {
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+.app {
+  display: inline-block;
+  margin: 10px;
+  padding: 10px 20px;
+  border: 2px solid #FFD700;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 300ms ease, color 300ms ease, transform 200ms ease;
+}
+
+.app:hover {
+  transform: scale(1.1);
+  background: linear-gradient(90deg, #FFD700, #FF4500);
+  color: #FFFFFF;
+}
+
+.app.selected {
+  background: linear-gradient(90deg, #FFD700, #FF4500);
+  color: #FFFFFF;
 }
 
 @media (max-width: 768px) {
