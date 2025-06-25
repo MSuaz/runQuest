@@ -247,6 +247,218 @@ body {
   color: #FFFFFF;
 }
 
+.day-selector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  margin: 20px 0;
+}
+
+.day-pill {
+  padding: 10px 20px;
+  border: 2px solid #FFD700;
+  border-radius: 50px;
+  background: #000;
+  color: #FFD700;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 300ms ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.day-pill:hover {
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+}
+
+.day-pill.active {
+  background: #FFD700;
+  color: #000;
+  border-color: transparent;
+  box-shadow: 0 0 15px rgba(255, 215, 0, 0.8);
+}
+
+.day-pill.active::after {
+  content: '✔';
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 14px;
+}
+
+.day-pill::before {
+  content: '';
+  position: absolute;
+  width: 200%;
+  height: 200%;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 50%;
+  transform: scale(0);
+  opacity: 0;
+  transition: transform 300ms ease, opacity 300ms ease;
+}
+
+.day-pill:active::before {
+  transform: scale(1);
+  opacity: 1;
+}
+
+#training-days-next-btn.hidden {
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(0.95);
+}
+
+#training-days-next-btn.visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: scale(1);
+  transition: opacity 300ms ease, transform 300ms ease;
+}
+
+#schedule-next-btn {
+  display: block;
+  margin: 20px auto;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 300ms ease, transform 300ms ease;
+}
+
+#schedule-next-btn.visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: scale(1.05);
+}
+
+#schedule-next-btn:hover {
+  box-shadow: 0 0 15px rgba(255, 215, 0, 0.8);
+}
+
+.plan-container {
+  background: rgba(0, 0, 0, 0.8);
+  color: #FFD700;
+  padding: 20px;
+  border-radius: 16px;
+  box-shadow: 0 4px 10px rgba(255, 215, 0, 0.2);
+  text-align: left;
+  margin: 20px auto;
+  max-width: 500px;
+}
+
+.plan-container h3 {
+  margin-bottom: 10px;
+}
+
+.plan-container p {
+  margin: 5px 0;
+}
+
+#personalized-questions label {
+  display: block;
+  margin: 10px 0 5px;
+  font-size: 16px;
+}
+
+#personalized-questions input,
+#personalized-questions select {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 2px solid #FFD700;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #FFD700;
+  font-size: 16px;
+}
+
+#personalized-questions input::placeholder {
+  color: #aaa;
+}
+
+#runner-type .option.selected {
+  border: 2px solid #FFD700;
+  background: linear-gradient(90deg, #FFD700, #FF4500);
+  color: #FFFFFF;
+  transform: scale(1.05);
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
+}
+
+#runner-type .primary-btn.hidden {
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(0.95);
+}
+
+#runner-type .primary-btn.visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: scale(1);
+  transition: opacity 300ms ease, transform 300ms ease;
+}
+
+#timer-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 20px 0;
+}
+
+#timer {
+  font-size: 48px;
+  font-weight: bold;
+  color: #FFD700;
+  background: #000;
+  padding: 20px 40px;
+  border-radius: 16px;
+  box-shadow: 0 4px 10px rgba(255, 215, 0, 0.5);
+  animation: pulse 1s infinite;
+}
+
+#motivational-message {
+  font-size: 18px;
+  color: #FFD700;
+  margin-top: 10px;
+  text-align: center;
+}
+
+.primary-btn.hidden {
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(0.95);
+}
+
+.secondary-btn {
+  background: transparent;
+  color: #FFD700;
+  border: 2px solid #FFD700;
+  border-radius: 16px;
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 20px;
+  transition: transform 300ms ease, background-color 300ms ease;
+}
+
+.secondary-btn:hover {
+  background: #FFD700;
+  color: #000;
+  transform: scale(1.05);
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 4px 10px rgba(255, 215, 0, 0.5);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 6px 15px rgba(255, 215, 0, 0.8);
+  }
+}
+
 @media (max-width: 768px) {
   #onboarding {
     padding: 10px;
