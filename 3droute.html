@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Route Visualization</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
+        canvas {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.153.0/three.min.js"></script>
+    <script>
+        // Initialize scene, camera, and renderer
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        // Create route geometry
+        const routeMaterial = new THREE.LineBasicMaterial({ color: 0xff0000 });
+        const routePoints = [
+            new THREE.Vector3(-10, 0, 0),
+            new THREE.Vector3(0, 10, 0),
+            new THREE.Vector3(10, 0, 0),
+            new THREE.Vector3(20, 10, 0)
+        ];
+        const routeGeometry = new THREE.BufferGeometry().setFromPoints(routePoints);
+        const routeLine = new THREE.Line(routeGeometry, routeMaterial);
+        scene.add(routeLine);
+
+        // Add a moving dot along the route
+        const dotGeometry = new THREE.SphereGeometry(0.5, 32, 32);
+        const dotMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+        const dot = new THREE.Mesh(dotGeometry, dotMaterial);
+        scene.add(dot);
+
+        // Animation variables
+        let progress = 0;
+        const animationSpeed = 0.01;
+
+        function animateDot() {
+            progress += animationSpeed;
+            if (progress > 1) progress = 0;
+
+            const index = Math.floor(progress * (routePoints.length - 1));
+            const nextIndex = Math.min(index + 1, routePoints.length - 1);
+            const t = progress * (routePoints.length - 1) - index;
+
+            dot.position.lerpVectors(routePoints[index], routePoints[nextIndex], t);
+        }
+
+        // Camera setup
+        camera.position.z = 30;
+
+        // Render loop
+        function animate() {
+            requestAnimationFrame(animate);
+            animateDot();
+            renderer.render(scene, camera);
+        }
+        animate();
+    </script>
+</body>
+</html>

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confetti Animation</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #f0f0f0;
+        }
+
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: red;
+            opacity: 0.8;
+            animation: fall 14s linear infinite, drift 14s ease-in-out infinite, spin 14s linear infinite;
+        }
+
+        @keyframes fall {
+            0% {
+                transform: translateY(-100px);
+            }
+            100% {
+                transform: translateY(100vh);
+            }
+        }
+
+        @keyframes drift {
+            0% {
+                transform: translateX(0);
+            }
+            25% {
+                transform: translateX(-80px);
+            }
+            50% {
+                transform: translateX(80px);
+            }
+            75% {
+                transform: translateX(-80px);
+            }
+            100% {
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(720deg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <script>
+        const colors = ['red', 'blue', 'green', 'yellow', 'purple', 'orange'];
+        const confettiCount = 100;
+
+        for (let i = 0; i < confettiCount; i++) {
+            const confetti = document.createElement('div');
+            confetti.className = 'confetti';
+            confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+            confetti.style.left = `${Math.random() * window.innerWidth}px`;
+            confetti.style.animationDelay = `${Math.random() * 14}s`;
+            confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+            document.body.appendChild(confetti);
+        }
+    </script>
+</body>
+</html>

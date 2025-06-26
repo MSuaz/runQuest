@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Sync Animation View</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: #181818;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+    }
+    #sync-canvas {
+      display: block;
+      width: 100vw;
+      height: 100vh;
+      background: #181818;
+      touch-action: none;
+    }
+    .sync-btn {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      z-index: 10;
+      background: #222;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 18px;
+      font-size: 1rem;
+      cursor: pointer;
+      opacity: 0.85;
+      transition: background 0.2s;
+    }
+    .sync-btn:hover {
+      background: #333;
+    }
+  </style>
+</head>
+<body>
+  <button class="sync-btn" id="translateBtn">Animate Translate</button>
+  <canvas id="sync-canvas"></canvas>
+  <script>
+    // --- CONFIGURATION ---
+    const sourceColors = ['#00B0F3', '#00CCDA', '#FF003D', '#464646', '#FF5700', '#CCFF00'];
+    const trackColor = '#2B2B2B';
+    const healthDotColor = '#FFC100';
+
+    // Layout constants (scaled for responsiveness)
+    const BASE_HEIGHT = 844;
+    const BASE_WIDTH = 390;
+    const headerHeight = 50;
+    const sourceIconSize = 61;
+    const sourceIconSpacing = 14;
+    const sourceTrackSpacing = 10;
+    const sourceStartY = 142;
+    const trackWidth = 4.5;
+    const trackCornerRadius = 32;
+    const dotRadius = 7.5;
+    const healthIconSize = 100;
+    const syncIconSize = 113;
+    const verticalLineLength = 400;
+    const iconCarouselSpeed = 0.5;
+    const dotSpeed = 0.6;
+    const dotSpawnRate = 40;
+    const verticalDotSpeed = 0.4;
+    const verticalDotSpawnRate = 120;
+    const syncIconRotationRate = 0.05;
+    const translateAnimationDuration = 1.5; // seconds
+
+    // --- ICON SVGs (placeholders) ---
+    const iconSVGs = [
+      `<svg width="61" height="61" viewBox="0 0 61 61"><circle cx="30.5" cy="30.5" r="28" fill="#00B0F3" stroke="#fff" stroke-width="5"/><text x="50%" y="55%" text-anchor="middle" fill="#fff" font-size="18" font-family="Arial" dy=".3em">G</text></svg>`,
+      `<svg width="61" height="61" viewBox="0 0 61 61"><rect x="6" y="6" width="49" height="49" rx="12" fill="#00CCDA" stroke="#fff" stroke-width="5"/><text x="50%" y="55%" text-anchor="middle" fill="#fff" font-size="18" font-family="Arial" dy=".3em">R</text></svg>`,
+      `<svg width="61" height="61" viewBox="0 0 61 61"><circle cx="30.5" cy="30.5" r="28" fill="#FF003D" stroke="#fff" stroke-width="5"/><text x="50%" y="55%" text-anchor="middle" fill="#fff" font-size="18" font-family="Arial" dy=".3em">P</text></svg>`,
+      `<svg width="61" height="61" viewBox="0 0 61 61"><rect x="6" y="6" width="49" height="49" rx="12" fill="#464646" stroke="#fff" stroke-width="5"/><text x="50%" y="55%" text-anchor="middle" fill="#fff" font-size="18" font-family="Arial" dy=".3em">N</text></svg>`,
+      `<svg width="61" height="61" viewBox="0 0 61 61"><circle cx="30.5" cy="30.5" r="28" fill="#FF5700" stroke="#fff" stroke-width="5"/><text x="50%" y="55%" text-anchor="middle" fill="#fff" font-size="18" font-family="Arial" dy=".3em">S</text></svg>`,
+      `<svg width="61" height="61" viewBox="0 0 61 61"><rect x="6" y="6" width="49" height="49" rx="12" fill="#CCFF00" stroke="#fff" stroke-width="5"/><text x="50%" y="55%" text-anchor="middle" fill="#464646" font-size="18" font-family="Arial" dy=".3em">F</text></svg>`
+    ];
+    const healthSVG = `<svg width="100" height="100" viewBox="0 0 100 100"><circle cx="50" cy="50" r="48" fill="#fff" stroke="#FFC100" stroke-width="4"/><path d="M50 25 Q65 40 50 55 Q35 40 50 25Z" fill="#FFC100"/></svg>`;
+    const syncSVG = `<svg width="113" height="113" viewBox="0 0 113 113"><circle cx="56.5" cy="56.5" r="50" fill="#222" stroke="#FFC100" stroke-width="6"/><path d="M56.5 20 A36.5 36.5 0 1 1 20 56.5" fill="none" stroke="#FFC100" stroke-width="8" stroke-linecap="round"/><polygon points="15,56.5 28,50 28,63" fill="#FFC100"/></svg>`;
+
+    // --- UTILS ---
+    function clamp(val, min, max) { return Math.max(min, Math.min(max, val)); }
+    function lerp(a, b, t) { return a + (b - a) * t; }
+    function easeInOutQuart(x) {
+      return x < 0.5 ? 8 * Math.pow(x, 4) : 1 - Math.pow(-2 * x + 2, 4) / 2;
+    }
+    function loadSVGDataURL(svg) {
+      return 'data:image/svg+xml;base64,' + btoa(svg);
+    }
+
+    // --- CANVAS SETUP ---
+    const canvas = document.getElementById('sync-canvas');
+    const ctx = canvas.getContext('2d');
+    let dpr = window.devicePixelRatio || 1;
+
+    // --- RESPONSIVE SIZING ---
+    let W = 390, H = 844, scale = 1;
+    function resizeCanvas() {
+      W = window.innerWidth;
+      H = window.innerHeight;
+      scale = Math.min(W / BASE_WIDTH, H / BASE_HEIGHT);
+      canvas.width = W * dpr;
+      canvas.height = H * dpr;
+      canvas.style.width = W + 'px';
+      canvas.style.height = H + 'px';
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.scale(dpr, dpr);
+    }
+    window.addEventListener('resize', resizeCanvas);
+
+    // --- ICON IMAGES ---
+    const iconImgs = iconSVGs.map(svg => {
+      const img = new window.Image();
+      img.src = loadSVGDataURL(svg);
+      return img;
+    });
+    const healthImg = new window.Image();
+    healthImg.src = loadSVGDataURL(healthSVG);
+    const syncImg = new window.Image();
+    syncImg.src = loadSVGDataURL(syncSVG);
+
+    // --- ANIMATION STATE ---
+    let t = 0;
+    let dots = [];
+    let verticalDots = [];
+    let dotSpawn = dotSpawnRate - 1;
+    let verticalDotSpawn = verticalDotSpawnRate - 30;
+    let translateY = 0;
+    let syncIconRotate = 0;
+    let prevDotSpawnIdx = 0;
+    let animProgress = 0;
+    let animatingTranslate = false;
+    let finalTranslateY = -650;
+    let sourceHealthSpacing = 110;
+
+    // --- TRANSLATE BUTTON ---
+    document.getElementById('translateBtn').onclick = () => {
+      if (!animatingTranslate) {
+        animatingTranslate = true;
+        animProgress = 0;
+      }
+    };
+
+    // --- MAIN ANIMATION LOOP ---
+    function animate() {
+      t += 1;
+      incrementDots();
+      spawnNewDots();
+      spawnNewVerticalDots();
+      draw();
+      if (animatingTranslate) {
+        animProgress += 1 / (translateAnimationDuration * 60);
+        let eased = easeInOutQuart(animProgress);
+        translateY = lerp(0, finalTranslateY * scale, eased);
+        if (eased >= 1) animatingTranslate = false;
+      }
+      requestAnimationFrame(animate);
+    }
+
+    // --- DOT LOGIC ---
+    function incrementDots() {
+      for (let i = dots.length - 1; i >= 0; --i) {
+        dots[i].percent += dotSpeed / 100;
+        dots[i].pathStartX -= iconCarouselSpeed * scale;
+        if (dots[i].percent >= 1) dots.splice(i, 1);
+      }
+      for (let i = verticalDots.length - 1; i >= 0; --i) {
+        verticalDots[i].percent += verticalDotSpeed / 100;
+        if (verticalDots[i].percent >= 1) verticalDots.splice(i, 1);
+      }
+    }
+    function spawnNewDots() {
+      if (dotSpawn !== dotSpawnRate) {
+        dotSpawn += 1;
+        return;
+      }
+      dotSpawn = 0;
+      let i = 0;
+      let startX = (-1 * iconCarouselSpeed * t * scale) - 150 * scale;
+      while (startX < 0) {
+        startX += (sourceIconSize + sourceIconSpacing) * scale;
+        i += 1;
+      }
+      let rand = prevDotSpawnIdx;
+      while (rand === prevDotSpawnIdx) {
+        rand = Math.floor(Math.random() * 5);
+      }
+      prevDotSpawnIdx = rand;
+      startX += rand * (sourceIconSize + sourceIconSpacing) * scale;
+      startX += (sourceIconSize / 2) * scale;
+      i += rand;
+      dots.push({
+        percent: 0,
+        pathStartX: startX,
+        color: sourceColors[i % sourceColors.length]
+      });
+    }
+    function spawnNewVerticalDots() {
+      if (verticalDotSpawn !== verticalDotSpawnRate) {
+        verticalDotSpawn += 1;
+        return;
+      }
+      verticalDotSpawn = 0;
+      verticalDots.push({ percent: 0 });
+    }
+
+    // --- PATH CALCULATION ---
+    function pointOnPath(dot) {
+      const percent = dot.percent;
+      const isRightSide = dot.pathStartX > (W / 2);
+      const centerX = isRightSide
+        ? dot.pathStartX - trackCornerRadius * scale
+        : dot.pathStartX + trackCornerRadius * scale;
+      const pathStartY = sourceStartY * scale + (sourceIconSize / 2) * scale;
+      const pathEndY = sourceStartY * scale + sourceIconSize * scale + sourceHealthSpacing * scale + (healthIconSize / 2) * scale;
+      const verticalLineLen = pathEndY - pathStartY - trackCornerRadius * scale;
+      const curveLen = Math.PI * trackCornerRadius * scale / 2;
+      const horizontalLineLen = Math.abs((W / 2) - centerX);
+      const totalLen = verticalLineLen + curveLen + horizontalLineLen;
+      const vertPercent = percent / (verticalLineLen / totalLen);
+      const curvePercent = (percent - (verticalLineLen / totalLen)) / (curveLen / totalLen);
+      const horizontalPercent = (percent - ((verticalLineLen + curveLen) / totalLen)) / (horizontalLineLen / totalLen);
+
+      let dotPoint = { x: 0, y: 0 };
+      if (percent <= verticalLineLen / totalLen) {
+        dotPoint.x = dot.pathStartX;
+        dotPoint.y = pathStartY + (verticalLineLen * vertPercent);
+      } else if (percent <= (verticalLineLen + curveLen) / totalLen) {
+        if (Math.abs((W / 2) - dot.pathStartX) < healthIconSize * scale / 3) {
+          dotPoint.x = W / 2;
+          dotPoint.y = pathEndY;
+        } else if (isRightSide) {
+          const angle = (Math.PI / 2) * (1 - curvePercent);
+          dotPoint.x = centerX + (trackCornerRadius * scale * Math.sin(angle));
+          dotPoint.y = (pathEndY - trackCornerRadius * scale) + (trackCornerRadius * scale * Math.cos(angle));
+        } else {
+          const angle = (Math.PI / 2) * curvePercent - (Math.PI / 2);
+          dotPoint.x = centerX + (trackCornerRadius * scale * Math.sin(angle));
+          dotPoint.y = (pathEndY - trackCornerRadius * scale) + (trackCornerRadius * scale * Math.cos(angle));
+        }
+      } else {
+        if (Math.abs((W / 2) - dot.pathStartX) < healthIconSize * scale / 3) {
+          dotPoint.x = W / 2;
+          dotPoint.y = pathEndY;
+        } else {
+          const clampedPercent = clamp(horizontalPercent, 0, 1);
+          const x = isRightSide
+            ? centerX - (clampedPercent * horizontalLineLen)
+            : centerX + (clampedPercent * horizontalLineLen);
+          dotPoint.x = x;
+          dotPoint.y = pathEndY;
+        }
+      }
+      return dotPoint;
+    }
+
+    // --- DRAWING ---
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+      ctx.save();
+      ctx.translate(0, headerHeight * scale);
+      ctx.translate(0, translateY);
+
+      // --- Draw horizontal line ---
+      const pathStartY = sourceStartY * scale + sourceIconSize * scale + sourceTrackSpacing * scale;
+      const pathEndY = sourceStartY * scale + sourceIconSize * scale + sourceHealthSpacing * scale + (healthIconSize / 2) * scale;
+      ctx.save();
+      ctx.strokeStyle = trackColor;
+      ctx.lineWidth = trackWidth * scale;
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      ctx.moveTo(-20 * scale, pathEndY);
+      ctx.lineTo(W + 20 * scale, pathEndY);
+      ctx.stroke();
+      ctx.restore();
+
+      // --- Draw source icons, tracks, and queue icon rects ---
+      let i = 0;
+      let startX = (-1 * iconCarouselSpeed * t * scale) - 150 * scale;
+      let sourceIconsToDraw = [];
+      let sourceIconRects = [];
+      ctx.save();
+      ctx.shadowColor = 'rgba(0,0,0,0.5)';
+      ctx.shadowBlur = 10 * scale;
+      while (startX < W + (2 * sourceIconSize * scale)) {
+        if (startX < -2 * sourceIconSize * scale) {
+          i += 1;
+          startX += (sourceIconSize + sourceIconSpacing) * scale;
+          continue;
+        }
+        // Draw vertical track
+        ctx.save();
+        ctx.strokeStyle = trackColor;
+        ctx.lineWidth = trackWidth * scale;
+        ctx.lineCap = 'round';
+        ctx.beginPath();
+        ctx.moveTo(startX + sourceIconSize * scale / 2, sourceStartY * scale + sourceIconSize * scale);
+        ctx.lineTo(startX + sourceIconSize * scale / 2, pathEndY - trackCornerRadius * scale);
+        // Draw arc
+        const isRightSide = (startX + sourceIconSize * scale / 2) > (W / 2);
+        const centerX = isRightSide
+          ? startX + (sourceIconSize * scale / 2) - trackCornerRadius * scale
+          : startX + (sourceIconSize * scale / 2) + trackCornerRadius * scale;
+        ctx.arc(
+          centerX,
+          pathEndY - trackCornerRadius * scale,
+          trackCornerRadius * scale,
+          isRightSide ? 0 : Math.PI,
+          Math.PI / 2,
+          isRightSide
+        );
+        ctx.stroke();
+        ctx.restore();
+
+        // Queue icon draw
+        sourceIconsToDraw.push(iconImgs[i % iconImgs.length]);
+        sourceIconRects.push([
+          startX,
+          sourceStartY * scale,
+          sourceIconSize * scale,
+          sourceIconSize * scale
+        ]);
+        i += 1;
+        startX += (sourceIconSize + sourceIconSpacing) * scale;
+      }
+      ctx.restore();
+
+      // --- Draw dots ---
+      for (let dot of dots) {
+        const pt = pointOnPath(dot);
+        ctx.save();
+        ctx.shadowColor = dot.color;
+        ctx.shadowBlur = 10 * scale;
+        ctx.fillStyle = dot.color;
+        ctx.beginPath();
+        ctx.arc(pt.x, pt.y, dotRadius * scale, 0, 2 * Math.PI);
+        ctx.fill();
+        ctx.restore();
+      }
+
+      // --- Draw source icons ---
+      ctx.save();
+      ctx.shadowColor = 'rgba(0,0,0,0.5)';
+      ctx.shadowBlur = 10 * scale;
+      for (let j = 0; j < sourceIconsToDraw.length; ++j) {
+        const img = sourceIconsToDraw[j];
+        const [x, y, w, h] = sourceIconRects[j];
+        if (img.complete) ctx.drawImage(img, x, y, w, h);
+      }
+      ctx.restore();
+
+      // --- Draw vertical line ---
+      ctx.save();
+      ctx.strokeStyle = trackColor;
+      ctx.lineWidth = trackWidth * scale;
+      ctx.beginPath();
+      ctx.moveTo(W / 2, pathEndY);
+      ctx.lineTo(W / 2, pathEndY + verticalLineLength * scale);
+      ctx.stroke();
+      ctx.restore();
+
+      // --- Draw vertical dots ---
+      ctx.save();
+      ctx.shadowColor = healthDotColor;
+      ctx.shadowBlur = 10 * scale;
+      ctx.fillStyle = healthDotColor;
+      for (let dot of verticalDots) {
+        const y = pathEndY + (verticalLineLength * scale * dot.percent);
+        ctx.beginPath();
+        ctx.arc(W / 2, y, dotRadius * scale, 0, 2 * Math.PI);
+        ctx.fill();
+      }
+      ctx.restore();
+
+      // --- Draw Health Icon ---
+      ctx.save();
+      ctx.shadowColor = 'rgba(0,0,0,0.5)';
+      ctx.shadowBlur = 10 * scale;
+      const healthIconFrame = [
+        (W / 2) - (healthIconSize * scale / 2),
+        pathEndY - (healthIconSize * scale / 2),
+        healthIconSize * scale,
+        healthIconSize * scale
+      ];
+      if (healthImg.complete) ctx.drawImage(healthImg, ...healthIconFrame);
+      ctx.restore();
+
+      // --- Draw Sync Icon (rotating) ---
+      ctx.save();
+      ctx.translate(W / 2, pathEndY + verticalLineLength * scale);
+      ctx.rotate(syncIconRotate);
+      ctx.translate(-syncIconSize * scale / 2, -syncIconSize * scale / 2);
+      if (syncImg.complete) ctx.drawImage(syncImg, 0, 0, syncIconSize * scale, syncIconSize * scale);
+      ctx.restore();
+
+      ctx.restore();
+
+      // --- Update rotation ---
+      syncIconRotate += syncIconRotationRate;
+    }
+
+    // --- INITIALIZE ---
+    function init() {
+      // Responsive adjustments for sourceHealthSpacing and finalTranslateY
+      const sizeDiff = clamp(BASE_HEIGHT - window.innerHeight, -30, 60);
+      sourceHealthSpacing = 110 - sizeDiff;
+      finalTranslateY = -650 + sizeDiff;
+      resizeCanvas();
+      animate();
+    }
+    window.onload = init;
+  </script>
+</body>
+</html>

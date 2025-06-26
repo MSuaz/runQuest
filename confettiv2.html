@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confetti Animation</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #f0f0f0;
+        }
+
+        canvas {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="confettiCanvas"></canvas>
+    <script>
+        const canvas = document.getElementById('confettiCanvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const confettiCount = 150;
+        const confettiColors = [
+            { start: '#ff0000', end: '#ff8080' },
+            { start: '#00ff00', end: '#80ff80' },
+            { start: '#0000ff', end: '#8080ff' },
+            { start: '#ffff00', end: '#ffff80' },
+            { start: '#ff00ff', end: '#ff80ff' },
+            { start: '#00ffff', end: '#80ffff' }
+        ];
+
+        const confetti = [];
+
+        function createGradient(color) {
+            const gradient = ctx.createLinearGradient(0, 0, 10, 10);
+            gradient.addColorStop(0, color.start);
+            gradient.addColorStop(1, color.end);
+            return gradient;
+        }
+
+        function randomRange(min, max) {
+            return Math.random() * (max - min) + min;
+        }
+
+        function initConfetti() {
+            for (let i = 0; i < confettiCount; i++) {
+                confetti.push({
+                    x: randomRange(0, canvas.width),
+                    y: randomRange(-canvas.height, 0),
+                    width: randomRange(5, 10),
+                    height: randomRange(5, 10),
+                    color: createGradient(confettiColors[Math.floor(Math.random() * confettiColors.length)]),
+                    velocityX: randomRange(-2, 2),
+                    velocityY: randomRange(2, 5),
+                    rotation: randomRange(0, 360),
+                    rotationSpeed: randomRange(2, 5)
+                });
+            }
+        }
+
+        function drawConfetti() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            confetti.forEach(particle => {
+                ctx.save();
+                ctx.translate(particle.x, particle.y);
+                ctx.rotate((particle.rotation * Math.PI) / 180);
+                ctx.fillStyle = particle.color;
+                ctx.fillRect(-particle.width / 2, -particle.height / 2, particle.width, particle.height);
+                ctx.restore();
+
+                particle.x += particle.velocityX;
+                particle.y += particle.velocityY;
+                particle.rotation += particle.rotationSpeed;
+
+                if (particle.y > canvas.height) {
+                    particle.y = randomRange(-canvas.height, 0);
+                    particle.x = randomRange(0, canvas.width);
+                }
+            });
+        }
+
+        function animate() {
+            drawConfetti();
+            requestAnimationFrame(animate);
+        }
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+
+        initConfetti();
+        animate();
+    </script>
+</body>
+</html>

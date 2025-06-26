@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Tap and Hold to Stop</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <style>
+    :root {
+      --ad-orange: #ff9500;
+      --ad-orange-light: #ffb84d;
+      --ad-yellow: #ffd60a;
+      --ad-green: #30d158;
+      --ad-bg: #181818;
+      --ad-bg-dark: #101010;
+      --ad-white: #fff;
+      --ad-black: #000;
+      --blur: blur(16px);
+    }
+
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      background: var(--ad-bg);
+      color: var(--ad-white);
+      font-family: 'SF Pro Display', 'Segoe UI', Arial, sans-serif;
+      overflow: hidden;
+      touch-action: manipulation;
+    }
+
+    body {
+      min-height: 100vh;
+      min-width: 100vw;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      align-items: center;
+      background: linear-gradient(180deg, #232526 0%, #181818 100%);
+      position: relative;
+    }
+
+    /* Gradient background at bottom */
+    .bottom-gradient {
+      position: absolute;
+      left: 0; right: 0; bottom: 0;
+      height: 320px;
+      pointer-events: none;
+      background: linear-gradient(180deg, rgba(24,24,24,0) 0%, #181818 60%, #000 100%);
+      z-index: 0;
+    }
+
+    /* Control Bar */
+    .control-bar {
+      position: relative;
+      width: 100vw;
+      max-width: 480px;
+      margin: 0 auto;
+      padding: 0 0 32px 0;
+      z-index: 2;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0;
+      user-select: none;
+    }
+
+    /* Stop Button */
+    .stop-btn {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: linear-gradient(145deg, #fff 60%, #e0e0e0 100%);
+      box-shadow: 0 4px 24px 0 rgba(0,0,0,0.18);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-left: 24px;
+      margin-right: 12px;
+      cursor: pointer;
+      position: relative;
+      overflow: visible;
+      transition: opacity 0.15s, transform 0.15s;
+      opacity: 1;
+      transform: scale(1);
+      will-change: transform, opacity;
+      touch-action: manipulation;
+    }
+    .stop-btn.pressed {
+      opacity: 0.5;
+      transform: scale(0.95);
+      transition: opacity 0.08s, transform 0.08s;
+    }
+    .stop-btn .icon-stop {
+      width: 22px;
+      height: 22px;
+      background: var(--ad-black);
+      border-radius: 6px;
+      display: block;
+      margin: auto;
+      box-shadow: 0 1px 4px 0 rgba(0,0,0,0.12);
+    }
+
+    /* Play/Pause Button */
+    .playpause-btn {
+      width: 84px;
+      height: 84px;
+      border-radius: 50%;
+      background: linear-gradient(145deg, var(--ad-orange) 60%, var(--ad-orange-light) 100%);
+      box-shadow: 0 4px 24px 0 rgba(0,0,0,0.18);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      margin: 0 0 0 -12px;
+      transition: background 0.2s, transform 0.15s;
+      will-change: background, transform;
+      position: relative;
+      z-index: 1;
+    }
+    .playpause-btn:active {
+      background: linear-gradient(145deg, #e67c00 60%, #ffb84d 100%);
+      transform: scale(0.97);
+    }
+    .playpause-btn .icon-play,
+    .playpause-btn .icon-pause {
+      display: block;
+      width: 32px;
+      height: 32px;
+      fill: var(--ad-black);
+      margin-left: 2px;
+    }
+    .playpause-btn .icon-pause {
+      margin-left: 0;
+    }
+
+    /* Camera Button */
+    .camera-btn {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: linear-gradient(145deg, #fff 60%, #e0e0e0 100%);
+      box-shadow: 0 4px 24px 0 rgba(0,0,0,0.18);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 24px;
+      margin-left: 12px;
+      cursor: pointer;
+      position: relative;
+      overflow: visible;
+      transition: background 0.2s, transform 0.15s;
+      will-change: background, transform;
+    }
+    .camera-btn:active {
+      background: linear-gradient(145deg, #e0e0e0 60%, #fff 100%);
+      transform: scale(0.97);
+    }
+    .camera-btn .icon-camera {
+      width: 32px;
+      height: 32px;
+      fill: var(--ad-black);
+      margin-top: -2px;
+    }
+
+    /* Tap and Hold Toast */
+    .toast {
+      position: absolute;
+      left: 50%;
+      bottom: 120px;
+      transform: translateX(-50%);
+      min-width: 220px;
+      max-width: 320px;
+      height: 60px;
+      background: rgba(30,30,30,0.85);
+      border-radius: 30px;
+      box-shadow: 0 4px 24px 0 rgba(0,0,0,0.18);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      color: #fff;
+      opacity: 0;
+      pointer-events: none;
+      z-index: 10;
+      transition: opacity 0.18s, transform 0.18s;
+      will-change: opacity, transform;
+      overflow: hidden;
+      border: 1.5px solid rgba(255,255,255,0.08);
+      font-weight: 500;
+      letter-spacing: 0.01em;
+      backdrop-filter: blur(16px);
+    }
+    .toast.visible {
+      opacity: 1;
+      transform: translateX(-50%) scale(1.04);
+      pointer-events: auto;
+    }
+    .toast .toast-progress {
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      background: linear-gradient(90deg, var(--ad-orange) 0%, var(--ad-yellow) 100%);
+      border-radius: 30px 0 0 30px;
+      width: 0%;
+      z-index: 1;
+      opacity: 0.25;
+      transition: width 0.2s linear;
+      will-change: width;
+    }
+    .toast .toast-content {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .toast .icon-stop {
+      width: 22px;
+      height: 22px;
+      background: var(--ad-orange);
+      border-radius: 6px;
+      margin-right: 8px;
+      box-shadow: 0 1px 4px 0 rgba(0,0,0,0.12);
+      display: inline-block;
+    }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+      .control-bar {
+        max-width: 100vw;
+        padding-bottom: 18px;
+      }
+      .bottom-gradient {
+        height: 180px;
+      }
+      .toast {
+        min-width: 160px;
+        font-size: 1rem;
+        bottom: 90px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="bottom-gradient"></div>
+  <div class="toast" id="holdToast">
+    <div class="toast-progress" id="toastProgress"></div>
+    <div class="toast-content">
+      <span class="icon-stop"></span>
+      Tap and hold to stop
+    </div>
+  </div>
+  <div class="control-bar">
+    <div class="stop-btn" id="stopBtn" tabindex="0" aria-label="Tap and hold to stop">
+      <span class="icon-stop"></span>
+    </div>
+    <div class="playpause-btn" id="playPauseBtn" tabindex="0" aria-label="Play/Pause">
+      <svg class="icon-play" id="playPauseIcon" viewBox="0 0 32 32">
+        <polygon points="8,4 28,16 8,28" />
+      </svg>
+    </div>
+    <div class="camera-btn" id="cameraBtn" tabindex="0" aria-label="Camera">
+      <svg class="icon-camera" viewBox="0 0 32 32">
+        <rect x="6" y="10" width="20" height="14" rx="4" fill="#000"/>
+        <circle cx="16" cy="17" r="5" fill="#fff"/>
+        <circle cx="16" cy="17" r="2.5" fill="#000"/>
+        <rect x="12" y="6" width="8" height="4" rx="2" fill="#000"/>
+      </svg>
+    </div>
+  </div>
+  <script>
+    // --- Tap and Hold to Stop Logic ---
+    const stopBtn = document.getElementById('stopBtn');
+    const holdToast = document.getElementById('holdToast');
+    const toastProgress = document.getElementById('toastProgress');
+    let holdTimeout = null;
+    let holdStart = 0;
+    let holdDuration = 1000; // ms
+    let holdActive = false;
+    let holdRAF = null;
+
+    function showToast() {
+      holdToast.classList.add('visible');
+      toastProgress.style.width = '0%';
+    }
+    function hideToast() {
+      holdToast.classList.remove('visible');
+      toastProgress.style.width = '0%';
+    }
+    function animateProgress() {
+      if (!holdActive) return;
+      const elapsed = Date.now() - holdStart;
+      const percent = Math.min(1, elapsed / holdDuration);
+      toastProgress.style.width = (percent * 100) + '%';
+      if (percent < 1) {
+        holdRAF = requestAnimationFrame(animateProgress);
+      }
+    }
+    function triggerStop() {
+      stopBtn.classList.remove('pressed');
+      hideToast();
+      toastProgress.style.width = '100%';
+      // Animate a green check
+      stopBtn.innerHTML = `<svg width="32" height="32" viewBox="0 0 32 32">
+        <circle cx="16" cy="16" r="16" fill="#30d158" />
+        <polyline points="10,17 15,22 23,12" fill="none" stroke="#000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>`;
+      setTimeout(() => {
+        stopBtn.innerHTML = '<span class="icon-stop"></span>';
+      }, 1200);
+      // Optionally: vibrate
+      if (window.navigator.vibrate) window.navigator.vibrate([30, 30, 30]);
+    }
+
+    function onHoldStart(e) {
+      if (holdActive) return;
+      holdActive = true;
+      stopBtn.classList.add('pressed');
+      showToast();
+      holdStart = Date.now();
+      animateProgress();
+      holdTimeout = setTimeout(() => {
+        holdActive = false;
+        triggerStop();
+      }, holdDuration);
+      e.preventDefault();
+    }
+    function onHoldEnd(e) {
+      if (!holdActive) return;
+      holdActive = false;
+      stopBtn.classList.remove('pressed');
+      hideToast();
+      clearTimeout(holdTimeout);
+      cancelAnimationFrame(holdRAF);
+      toastProgress.style.width = '0%';
+      e.preventDefault();
+    }
+
+    // Touch and mouse support
+    stopBtn.addEventListener('touchstart', onHoldStart, {passive: false});
+    stopBtn.addEventListener('touchend', onHoldEnd);
+    stopBtn.addEventListener('touchcancel', onHoldEnd);
+    stopBtn.addEventListener('mousedown', onHoldStart);
+    stopBtn.addEventListener('mouseup', onHoldEnd);
+    stopBtn.addEventListener('mouseleave', onHoldEnd);
+    stopBtn.addEventListener('keydown', (e) => {
+      if (e.code === 'Space' || e.code === 'Enter') onHoldStart(e);
+    });
+    stopBtn.addEventListener('keyup', (e) => {
+      if (e.code === 'Space' || e.code === 'Enter') onHoldEnd(e);
+    });
+
+    // --- Play/Pause Button Logic ---
+    const playPauseBtn = document.getElementById('playPauseBtn');
+    const playPauseIcon = document.getElementById('playPauseIcon');
+    let isPlaying = false;
+    playPauseBtn.addEventListener('click', () => {
+      isPlaying = !isPlaying;
+      playPauseIcon.innerHTML = isPlaying
+        ? `<rect x="7" y="4" width="7" height="24" rx="2"/><rect x="18" y="4" width="7" height="24" rx="2"/>`
+        : `<polygon points="8,4 28,16 8,28" />`;
+    });
+
+    // --- Camera Button Logic ---
+    const cameraBtn = document.getElementById('cameraBtn');
+    cameraBtn.addEventListener('click', () => {
+      // Simulate camera: flash animation
+      cameraBtn.style.boxShadow = '0 0 0 8px #fff8, 0 4px 24px 0 rgba(0,0,0,0.18)';
+      setTimeout(() => {
+        cameraBtn.style.boxShadow = '';
+      }, 180);
+      // Optionally: vibrate
+      if (window.navigator.vibrate) window.navigator.vibrate([20, 20]);
+    });
+
+    // --- Responsive resize for safe area insets (iOS) ---
+    function updateSafeArea() {
+      const bar = document.querySelector('.control-bar');
+      const bottom = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--sat-bottom') || 0, 10);
+      bar.style.paddingBottom = (24 + bottom) + 'px';
+    }
+    window.addEventListener('resize', updateSafeArea);
+    updateSafeArea();
+  </script>
+</body>
+</html>

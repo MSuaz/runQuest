@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Goal Picker</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+        }
+
+        .goal-picker {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .goal-option {
+            padding: 10px 20px;
+            border: 2px solid #007BFF;
+            border-radius: 5px;
+            background-color: #fff;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        .goal-option:hover {
+            background-color: #007BFF;
+            color: #fff;
+            transform: scale(1.1);
+        }
+
+        .selected {
+            background-color: #28a745;
+            color: #fff;
+            border-color: #28a745;
+        }
+    </style>
+</head>
+<body>
+    <div class="goal-picker">
+        <div class="goal-option" data-goal="5k">5K Run</div>
+        <div class="goal-option" data-goal="10k">10K Run</div>
+        <div class="goal-option" data-goal="half-marathon">Half Marathon</div>
+        <div class="goal-option" data-goal="marathon">Marathon</div>
+    </div>
+
+    <script>
+        const options = document.querySelectorAll('.goal-option');
+
+        options.forEach(option => {
+            option.addEventListener('click', () => {
+                options.forEach(opt => opt.classList.remove('selected'));
+                option.classList.add('selected');
+                alert(`You selected: ${option.dataset.goal}`);
+            });
+        });
+    </script>
+</body>
+</html>

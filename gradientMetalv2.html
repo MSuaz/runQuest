@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gradient Metal Animation</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #000;
+        }
+
+        canvas {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="gradientMetalCanvas"></canvas>
+    <script type="module">
+        import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.module.js';
+        import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.152.2/examples/jsm/controls/OrbitControls.js';
+
+        const canvas = document.getElementById('gradientMetalCanvas');
+        const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x000000);
+
+        const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(0, 50, 100);
+
+        const controls = new OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+        controls.minDistance = 50;
+        controls.maxDistance = 150;
+        controls.target.set(0, 0, 0);
+
+        const light = new THREE.PointLight(0xffffff, 1, 500);
+        light.position.set(50, 50, 50);
+        scene.add(light);
+
+        const ambientLight = new THREE.AmbientLight(0x404040);
+        scene.add(ambientLight);
+
+        const geometry = new THREE.SphereGeometry(30, 64, 64);
+        const material = new THREE.MeshStandardMaterial({
+            roughness: 0.3,
+            metalness: 1.0,
+            envMapIntensity: 1.0
+        });
+
+        const gradientTexture = new THREE.CanvasTexture(createGradientCanvas());
+        material.envMap = gradientTexture;
+
+        const sphere = new THREE.Mesh(geometry, material);
+        scene.add(sphere);
+
+        function createGradientCanvas() {
+            const size = 512;
+            const canvas = document.createElement('canvas');
+            canvas.width = size;
+            canvas.height = size;
+            const ctx = canvas.getContext('2d');
+
+            const gradient = ctx.createLinearGradient(0, 0, size, size);
+            gradient.addColorStop(0, '#ff0000');
+            gradient.addColorStop(0.5, '#00ff00');
+            gradient.addColorStop(1, '#0000ff');
+
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, size, size);
+
+            return canvas;
+        }
+
+        const animate = () => {
+            sphere.rotation.y += 0.01;
+            controls.update();
+            renderer.render(scene, camera);
+            requestAnimationFrame(animate);
+        };
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        animate();
+    </script>
+</body>
+</html>
