@@ -87,5 +87,61 @@
     <div class="card"><h3>Onboarding Carousel (2022)</h3><a href="https://github.com/Any-Distance/any-distance-ios/blob/main/ADAC/ADAC/Screens/Onboarding/2022/Onboarding2022View.swift" target="_blank">View on GitHub</a></div>
   </section>
 
+  <section>
+    <h2>🧑‍🚀 Tai - Gradient Animation (Metal)</h2>
+    <div class="card">
+      <h3>Gradient Animation Code</h3>
+      <pre style="background: #2a2a2e; color: #ffd1cb; padding: 1rem; border-radius: 8px; overflow-x: auto;">
+        <code>
+          struct NodeBuffer {
+            float4x4 modelTransform;
+            float4x4 modelViewTransform;
+            float4x4 normalTransform;
+            float4x4 modelViewProjectionTransform;
+          }
+
+          struct VertexIn {
+            float2 position;
+          }
+
+          struct VertexOut {
+            float4 position [[position]];
+            float time;
+            float2 viewSize;
+            int page;
+          }
+
+          struct Uniforms {
+            int page;
+          }
+
+          vertex VertexOut gradient_animation_vertex(const device packed_float3* in [[ buffer(0) ]],
+                                                     constant float &time [[buffer(1)]],
+                                                     const device packed_float2* viewSize [[buffer(2)]],
+                                                     constant int &page [[buffer(3)]],
+                                                     unsigned int vid [[ vertex_id ]]) {
+            VertexOut out;
+            out.position = float4(in[vid], 1);
+            out.time = time + (float)page * 10.;
+            out.viewSize = float2(viewSize->x, viewSize->y);
+            out.page = page;
+            return out;
+          }
+
+          fragment float4 gradient_animation_fragment(VertexOut in [[stage_in]]) {
+            float2 st = in.position.xy/in.viewSize.xy;
+            st = float2(tan(st.x), sin(st.y));
+            st.x += (sin(in.time/2.1)+2.0)*0.12*sin(sin(st.y*st.x+in.time/6.0)*8.2);
+            st.y -= (cos(in.time/1.73)+2.0)*0.12*cos(st.x*st.y*5.1-in.time/4.0);
+            float3 bg = float3(0.0);
+            float mixValue = smoothstep(0.0, 0.8, distance(st,float2(sin(in.time/5.0)+0.5,sin(in.time/6.1)+0.5)));
+            float3 outColor = mix(float3(252.0/255.0, 60.0/255.0, 0.0/255.0), bg, mixValue);
+            return float4(outColor, 1.0);
+          }
+        </code>
+      </pre>
+    </div>
+  </section>
+
 </body>
 </html>

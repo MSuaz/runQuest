@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>3D Route Visualization</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+    }
+    canvas {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="routeCanvas"></canvas>
+  <script>
+    const canvas = document.getElementById('routeCanvas');
+    const renderer = new THREE.WebGLRenderer({ canvas });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.set(0, 250, 450);
+
+    const controls = new THREE.OrbitControls(camera, renderer.domElement);
+    controls.target.set(0, 0, 0);
+    controls.update();
+
+    const routeCoordinates = [
+      // Example coordinates: Replace with actual data
+      { latitude: 37.7749, longitude: -122.4194, altitude: 10 },
+      { latitude: 37.7750, longitude: -122.4195, altitude: 20 },
+      { latitude: 37.7751, longitude: -122.4196, altitude: 15 },
+    ];
+
+    const latitudeMin = Math.min(...routeCoordinates.map(c => c.latitude));
+    const latitudeMax = Math.max(...routeCoordinates.map(c => c.latitude));
+    const longitudeMin = Math.min(...routeCoordinates.map(c => c.longitude));
+    const longitudeMax = Math.max(...routeCoordinates.map(c => c.longitude));
+    const altitudeMin = Math.min(...routeCoordinates.map(c => c.altitude));
+    const altitudeMax = Math.max(...routeCoordinates.map(c => c.altitude));
+
+    const latitudeRange = latitudeMax - latitudeMin;
+    const longitudeRange = longitudeMax - longitudeMin;
+    const altitudeRange = altitudeMax - altitudeMin;
+
+    const points = routeCoordinates.map(c => {
+      const normalizedLatitude = (1 - ((c.latitude - latitudeMin) / latitudeRange));
+      const latitude = normalizedLatitude * 200 - 100;
+      const longitude = ((c.longitude - longitudeMin) / longitudeRange) * 200 - 100;
+      const altitude = ((c.altitude - altitudeMin) / altitudeRange) * 50;
+      return new THREE.Vector3(longitude, altitude, latitude);
+    });
+
+    const lineGeometry = new THREE.BufferGeometry().setFromPoints(points);
+    const lineMaterial = new THREE.LineBasicMaterial({ color: 0xff0000 });
+    const line = new THREE.Line(lineGeometry, lineMaterial);
+    scene.add(line);
+
+    const dotGeometry = new THREE.SphereGeometry(3, 32, 32);
+    const dotMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00 });
+    const dot = new THREE.Mesh(dotGeometry, dotMaterial);
+    dot.position.copy(points[0]);
+    scene.add(dot);
+
+    const animateDot = () => {
+      const duration = 5000; // 5 seconds
+      const startTime = performance.now();
+      const animate = (time) => {
+        const elapsed = time - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const index = Math.floor(progress * (points.length - 1));
+        dot.position.copy(points[index]);
+        if (progress < 1) {
+          requestAnimationFrame(animate);
+        }
+      };
+      requestAnimationFrame(animate);
+    };
+
+    animateDot();
+
+    const animate = () => {
+      requestAnimationFrame(animate);
+      renderer.render(scene, camera);
+    };
+
+    animate();
+  </script>
+</body>
+</html>
