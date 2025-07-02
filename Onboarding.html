@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Onboarding Experience</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: #000;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+      color: #fff;
+    }
+    body {
+      position: relative;
+      min-height: 100vh;
+      min-width: 100vw;
+      background: #181818;
+    }
+    #gradient-bg {
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      z-index: 0;
+      pointer-events: none;
+    }
+    .onboarding-container {
+      position: relative;
+      z-index: 1;
+      width: 100vw;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: stretch;
+      padding: 0;
+    }
+    .onboarding-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 32px 24px 0 24px;
+      width: 100%;
+      z-index: 2;
+    }
+    .onboarding-header img {
+      height: 36px;
+      width: auto;
+      object-fit: contain;
+    }
+    .onboarding-header .sign-in-btn {
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 1.1rem;
+      font-weight: 500;
+      cursor: pointer;
+      padding: 8px 16px;
+      border-radius: 8px;
+      transition: background 0.2s;
+    }
+    .onboarding-header .sign-in-btn:hover {
+      background: rgba(255,255,255,0.08);
+    }
+    .onboarding-main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      align-items: stretch;
+      padding: 0 24px;
+      z-index: 2;
+      min-height: 0;
+    }
+    .onboarding-texts {
+      margin-bottom: 16px;
+      min-height: 120px;
+      transition: all 0.7s cubic-bezier(.77,0,.18,1);
+    }
+    .onboarding-headline {
+      font-size: clamp(1.7rem, 4vw, 2.5rem);
+      font-weight: 600;
+      line-height: 1.1;
+      margin-bottom: 10px;
+      letter-spacing: -1px;
+      white-space: pre-line;
+      transition: opacity 0.5s, transform 0.5s;
+    }
+    .onboarding-subtitle {
+      font-size: clamp(1rem, 2vw, 1.2rem);
+      font-family: 'JetBrains Mono', 'Menlo', 'monospace';
+      color: #fff;
+      opacity: 0.7;
+      margin-bottom: 0;
+      white-space: pre-line;
+      transition: opacity 0.5s, transform 0.5s;
+    }
+    .carousel-container {
+      width: 100%;
+      max-width: 480px;
+      margin: 0 auto 24px auto;
+      position: relative;
+      z-index: 2;
+      min-height: 280px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .carousel {
+      width: 100%;
+      overflow: hidden;
+      position: relative;
+      border-radius: 16px;
+      background: rgba(0,0,0,0.3);
+      box-shadow: 0 4px 32px 0 rgba(0,0,0,0.18);
+      min-height: 260px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .carousel-track {
+      display: flex;
+      transition: transform 0.7s cubic-bezier(.77,0,.18,1);
+      will-change: transform;
+      align-items: center;
+    }
+    .carousel-item {
+      min-width: 320px;
+      max-width: 420px;
+      width: 80vw;
+      height: 260px;
+      margin: 0 8px;
+      border-radius: 12px;
+      overflow: hidden;
+      background: #222;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      box-shadow: 0 2px 16px 0 rgba(0,0,0,0.12);
+      transition: transform 0.5s, box-shadow 0.5s;
+    }
+    .carousel-item img, .carousel-item video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .carousel-controls {
+      position: absolute;
+      bottom: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 8px;
+      z-index: 3;
+    }
+    .carousel-dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background: #fff;
+      opacity: 0.25;
+      transition: opacity 0.3s, background 0.3s;
+      cursor: pointer;
+      border: none;
+      outline: none;
+    }
+    .carousel-dot.active {
+      opacity: 1;
+      background: #FFC100;
+    }
+    .icon-scroller-container {
+      width: 100%;
+      overflow: hidden;
+      margin: 0 auto 24px auto;
+      z-index: 2;
+      position: relative;
+      max-width: 600px;
+      min-height: 70px;
+      pointer-events: none;
+    }
+    .icon-scroller {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 16px;
+      will-change: transform;
+      animation: icon-scroll 18s linear infinite;
+    }
+    @keyframes icon-scroll {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+    .icon-scroller img {
+      width: 61px;
+      height: 61px;
+      object-fit: contain;
+      border-radius: 12px;
+      background: #181818;
+      box-shadow: 0 2px 8px 0 rgba(0,0,0,0.18);
+      margin: 0 2px;
+    }
+    .onboarding-btn {
+      width: 100%;
+      max-width: 420px;
+      margin: 0 auto 12px auto;
+      height: 55px;
+      background: #fff;
+      color: #181818;
+      font-size: 1.1rem;
+      font-weight: 700;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 12px 0 rgba(0,0,0,0.10);
+    }
+    .onboarding-btn:active {
+      background: #FFC100;
+      color: #000;
+    }
+    .onboarding-footer {
+      width: 100%;
+      text-align: center;
+      color: #fff;
+      opacity: 0.7;
+      font-size: 0.95rem;
+      margin-bottom: 18px;
+      margin-top: 0;
+      z-index: 2;
+    }
+    @media (max-width: 600px) {
+      .carousel-item {
+        min-width: 90vw;
+        width: 90vw;
+        height: 180px;
+      }
+      .carousel {
+        min-height: 180px;
+      }
+      .carousel-container {
+        min-height: 180px;
+      }
+      .icon-scroller img {
+        width: 44px;
+        height: 44px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="gradient-bg"></canvas>
+  <div class="onboarding-container">
+    <div class="onboarding-header">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/Wordmark-Placeholder.svg" alt="Wordmark" style="height:36px;">
+      <button class="sign-in-btn" onclick="alert('Sign In action')">Sign In</button>
+    </div>
+    <div class="onboarding-main">
+      <div class="onboarding-texts" id="onboarding-texts">
+        <div class="onboarding-headline" id="headline"></div>
+        <div class="onboarding-subtitle" id="subtitle"></div>
+      </div>
+      <div class="carousel-container">
+        <div class="carousel" id="carousel">
+          <div class="carousel-track" id="carousel-track">
+            <!-- Carousel items injected by JS -->
+          </div>
+          <div class="carousel-controls" id="carousel-controls">
+            <!-- Dots injected by JS -->
+          </div>
+        </div>
+      </div>
+      <div class="icon-scroller-container">
+        <div class="icon-scroller" id="icon-scroller">
+          <!-- Icons injected by JS -->
+        </div>
+      </div>
+      <button class="onboarding-btn" onclick="alert('Get Started action')">Get Started</button>
+      <div class="onboarding-footer">
+        No sign-up required unless you want to<br>store your goals and Collectibles.
+      </div>
+    </div>
+  </div>
+  <script>
+    // --- Gradient Animation (Canvas) ---
+    const gradientColors = [
+      // First page
+      [
+        "#F98425", "#E82840", "#4A0D21", "#B12040", "#F4523B"
+      ],
+      // Second page
+      [
+        "#B7F6FE", "#32A0FB", "#034EE7", "#0131A1", "#030C2F"
+      ],
+      // Third page
+      [
+        "#66E7FF", "#04CFD5", "#00A077", "#00Af8B", "#02251B"
+      ]
+    ];
+    let gradientPageIdx = 0;
+    let gradientAnimate = true;
+    const canvas = document.getElementById('gradient-bg');
+    const ctx = canvas.getContext('2d');
+    let W = window.innerWidth, H = window.innerHeight, dpr = window.devicePixelRatio || 1;
+    function resizeCanvas() {
+      W = window.innerWidth;
+      H = window.innerHeight;
+      canvas.width = W * dpr;
+      canvas.height = H * dpr;
+      canvas.style.width = W + 'px';
+      canvas.style.height = H + 'px';
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.scale(dpr, dpr);
+    }
+    window.addEventListener('resize', resizeCanvas);
+
+    // Ellipse animation state
+    const ellipses = [];
+    function rand18(idx) {
+      const idxf = idx;
+      return [
+        Math.sin(idxf * 6.3),
+        Math.cos(idxf * 1.3 + 48),
+        Math.sin(idxf + 31.2),
+        Math.cos(idxf * 44.1),
+        Math.sin(idxf * 3333.2),
+        Math.cos(idxf + 1.12 * Math.pow(idxf, 3)),
+        Math.sin(idxf * 22),
+        Math.cos(idxf * 34)
+      ];
+    }
+    function setupEllipses(seed) {
+      ellipses.length = 0;
+      for (let i = 0; i < 10; ++i) {
+        const rands = rand18(i + seed);
+        ellipses.push({
+          rands,
+          anim: Math.random() * 1000,
+        });
+      }
+    }
+    let ellipseSeed = 5;
+    setupEllipses(ellipseSeed);
+
+    function drawGradient() {
+      ctx.clearRect(0, 0, W, H);
+      const colors = gradientColors[gradientPageIdx];
+      const maxXOffset = W / 2;
+      const maxYOffset = H / 2;
+      for (let i = 0; i < ellipses.length; ++i) {
+        const rands = ellipses[i].rands;
+        const fill = colors[i % colors.length];
+        const t = (Date.now() / 1000 + i) % 1000;
+        const anim = Math.sin(t * 0.15 + i) * 0.5 + 0.5;
+        const x = gradientAnimate
+          ? rands[3] * maxXOffset * anim
+          : rands[4] * maxXOffset;
+        const y = gradientAnimate
+          ? rands[5] * maxYOffset * anim
+          : rands[6] * maxYOffset;
+        ctx.save();
+        ctx.globalAlpha = 0.85;
+        ctx.beginPath();
+        ctx.ellipse(
+          W / 2 + x,
+          H / 2 + y,
+          (rands[1] + 2) * 120,
+          (rands[2] + 2) * 120,
+          0, 0, 2 * Math.PI
+        );
+        ctx.fillStyle = fill;
+        ctx.shadowColor = fill;
+        ctx.shadowBlur = 80;
+        ctx.fill();
+        ctx.restore();
+      }
+      // Noise overlay (simulate)
+      ctx.save();
+      ctx.globalAlpha = 0.10;
+      for (let i = 0; i < 1000; ++i) {
+        ctx.fillStyle = "#fff";
+        ctx.globalAlpha = Math.random() * 0.08;
+        ctx.fillRect(Math.random() * W, Math.random() * H, 1, 1);
+      }
+      ctx.restore();
+    }
+    function animateGradient() {
+      drawGradient();
+      requestAnimationFrame(animateGradient);
+    }
+    resizeCanvas();
+    animateGradient();
+
+    // --- Onboarding Texts ---
+    const headlines = [
+      "<b>Privacy-driven</b><br>Activity Tracking and<br><b>safety-first</b> sharing.",
+      "Track your goals &<br>earn <b>motivational<br>Collectibles.</b>",
+      "<b>Easily Connect</b> the<br>active life apps<br><b>you already use.</b>"
+    ];
+    const subtitles = [
+      "No leaderboards. No comparison.<br>Any Distance Counts.",
+      "Celebrate your active lifestyle.",
+      "Connect with Garmin, Wahoo,<br>and Apple Health."
+    ];
+    let pageIdx = 0;
+    let pageTimer = null;
+    const headlineEl = document.getElementById('headline');
+    const subtitleEl = document.getElementById('subtitle');
+    function setTexts(idx) {
+      headlineEl.style.opacity = 0;
+      subtitleEl.style.opacity = 0;
+      setTimeout(() => {
+        headlineEl.innerHTML = headlines[idx];
+        subtitleEl.innerHTML = subtitles[idx];
+        headlineEl.style.opacity = 1;
+        subtitleEl.style.opacity = 1;
+      }, 250);
+    }
+    setTexts(pageIdx);
+
+    // --- Carousel ---
+    const carouselItems = [
+      { type: "img", src: "https://placehold.co/420x260/181818/fff?text=Screen+1" },
+      { type: "video", src: "https://www.w3schools.com/html/mov_bbb.mp4" },
+      { type: "img", src: "https://placehold.co/420x260/222/fff?text=Screen+3" },
+      { type: "video", src: "https://www.w3schools.com/html/movie.mp4" },
+      { type: "img", src: "https://placehold.co/420x260/333/fff?text=Screen+5" },
+      { type: "img", src: "https://placehold.co/420x260/444/fff?text=Screen+6" }
+    ];
+    const carouselTrack = document.getElementById('carousel-track');
+    const carouselControls = document.getElementById('carousel-controls');
+    let carouselPos = 0;
+    function renderCarousel() {
+      carouselTrack.innerHTML = '';
+      for (let i = 0; i < carouselItems.length; ++i) {
+        const item = carouselItems[i];
+        const div = document.createElement('div');
+        div.className = 'carousel-item';
+        if (item.type === "img") {
+          const img = document.createElement('img');
+          img.src = item.src;
+          img.alt = "Onboarding screen";
+          div.appendChild(img);
+        } else if (item.type === "video") {
+          const video = document.createElement('video');
+          video.src = item.src;
+          video.autoplay = true;
+          video.loop = true;
+          video.muted = true;
+          video.playsInline = true;
+          video.style.background = "#222";
+          div.appendChild(video);
+        }
+        carouselTrack.appendChild(div);
+      }
+      carouselTrack.style.transform = `translateX(${-carouselPos * (carouselTrack.children[0].offsetWidth + 16)}px)`;
+      // Dots
+      carouselControls.innerHTML = '';
+      for (let i = 0; i < 3; ++i) {
+        const dot = document.createElement('button');
+        dot.className = 'carousel-dot' + (i === pageIdx ? ' active' : '');
+        dot.onclick = () => setPage(i);
+        carouselControls.appendChild(dot);
+      }
+    }
+    renderCarousel();
+
+    // --- Icon Scroller ---
+    const iconSVGs = [
+      // Use placeholder SVGs for icons
+      `<svg width="61" height="61" viewBox="0 0 61 61"><circle cx="30.5" cy="30.5" r="28" fill="#00B0F3" stroke="#fff" stroke-width="5"/><text x="50%" y="55%" text-anchor="middle" fill="#fff" font-size="18" font-family="Arial" dy=".3em">G</text></svg>`,
+      `<svg width="61" height="61" viewBox="0 0 61 61"><rect x="6" y="6" width="49" height="49" rx="12" fill="#00CCDA" stroke="#fff" stroke-width="5"/><text x="50%" y="55%" text-anchor="middle" fill="#fff" font-size="18" font-family="Arial" dy=".3em">R</text></svg>`,
+      `<svg width="61" height="61" viewBox="0 0 61 61"><circle cx="30.5" cy="30.5" r="28" fill="#FF003D" stroke="#fff" stroke-width="5"/><text x="50%" y="55%" text-anchor="middle" fill="#fff" font-size="18" font-family="Arial" dy=".3em">P</text></svg>`,
+      `<svg width="61" height="61" viewBox="0 0 61 61"><rect x="6" y="6" width="49" height="49" rx="12" fill="#464646" stroke="#fff" stroke-width="5"/><text x="50%" y="55%" text-anchor="middle" fill="#fff" font-size="18" font-family="Arial" dy=".3em">N</text></svg>`,
+      `<svg width="61" height="61" viewBox="0 0 61 61"><circle cx="30.5" cy="30.5" r="28" fill="#FF5700" stroke="#fff" stroke-width="5"/><text x="50%" y="55%" text-anchor="middle" fill="#fff" font-size="18" font-family="Arial" dy=".3em">S</text></svg>`,
+      `<svg width="61" height="61" viewBox="0 0 61 61"><rect x="6" y="6" width="49" height="49" rx="12" fill="#CCFF00" stroke="#fff" stroke-width="5"/><text x="50%" y="55%" text-anchor="middle" fill="#464646" font-size="18" font-family="Arial" dy=".3em">F</text></svg>`
+    ];
+    const iconScroller = document.getElementById('icon-scroller');
+    function renderIcons() {
+      iconScroller.innerHTML = '';
+      // Repeat icons to fill the scroll area
+      for (let i = 0; i < 18; ++i) {
+        const idx = i % iconSVGs.length;
+        const img = document.createElement('img');
+        img.src = 'data:image/svg+xml;base64,' + btoa(iconSVGs[idx]);
+        img.alt = "App Icon";
+        iconScroller.appendChild(img);
+      }
+      // Duplicate for infinite scroll
+      for (let i = 0; i < 18; ++i) {
+        const idx = i % iconSVGs.length;
+        const img = document.createElement('img');
+        img.src = 'data:image/svg+xml;base64,' + btoa(iconSVGs[idx]);
+        img.alt = "App Icon";
+        iconScroller.appendChild(img);
+      }
+    }
+    renderIcons();
+
+    // --- Page/Carousel Logic ---
+    function setPage(idx) {
+      pageIdx = idx;
+      gradientPageIdx = idx;
+      ellipseSeed = idx === 2 ? 6 : 5;
+      setupEllipses(ellipseSeed);
+      setTexts(idx);
+      carouselPos = idx;
+      renderCarousel();
+    }
+    // Timer for auto-advance
+    function setupPageTimer() {
+      if (pageTimer) clearInterval(pageTimer);
+      pageTimer = setInterval(() => {
+        setPage((pageIdx + 1) % 3);
+      }, 4000);
+    }
+    setupPageTimer();
+
+    // Allow swipe for carousel (touch events)
+    let dragStartX = null;
+    carouselTrack.addEventListener('touchstart', e => {
+      dragStartX = e.touches[0].clientX;
+    });
+    carouselTrack.addEventListener('touchmove', e => {
+      if (dragStartX !== null) {
+        const dx = e.touches[0].clientX - dragStartX;
+        if (Math.abs(dx) > 40) {
+          if (dx < 0 && pageIdx < 2) setPage(pageIdx + 1);
+          else if (dx > 0 && pageIdx > 0) setPage(pageIdx - 1);
+          dragStartX = null;
+        }
+      }
+    });
+    carouselTrack.addEventListener('touchend', () => {
+      dragStartX = null;
+    });
+
+    // Pause timer on interaction
+    carouselTrack.addEventListener('mousedown', () => { if (pageTimer) clearInterval(pageTimer); });
+    carouselTrack.addEventListener('mouseup', setupPageTimer);
+
+    // Keyboard navigation
+    document.addEventListener('keydown', e => {
+      if (e.key === 'ArrowLeft' && pageIdx > 0) setPage(pageIdx - 1);
+      if (e.key === 'ArrowRight' && pageIdx < 2) setPage(pageIdx + 1);
+    });
+
+    // Responsive
+    window.addEventListener('resize', () => {
+      renderCarousel();
+      resizeCanvas();
+    });
+  </script>
+</body>
+</html>
