@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Custom Refresh</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: sans-serif;
+      overflow-x: hidden;
+    }
+
+    .pull-to-refresh {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      text-align: center;
+      height: 50px;
+      line-height: 50px;
+      color: #555;
+      background-color: #f0f0f0;
+      transform: translateY(-100%);
+      transition: transform 0.3s;
+      z-index: 10;
+    }
+
+    .pull-to-refresh.active {
+      transform: translateY(0%);
+    }
+
+    .loader {
+      display: none;
+    }
+
+    .loader.active {
+      display: inline-block;
+      margin-left: 10px;
+    }
+
+    .content {
+      padding: 80px 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="refresh" class="pull-to-refresh">
+    Pull to refresh
+    <span id="loader" class="loader">🔄</span>
+  </div>
+
+  <div class="content">
+    <p>Scroll down and then pull to refresh.</p>
+    <p>Lorem ipsum dolor sit amet...</p>
+    <p style="height: 1500px;"></p> <!-- Simula contenido largo -->
+  </div>
+
+  <script>
+    let startY = 0;
+    let isPulled = false;
+    const refreshBar = document.getElementById('refresh');
+    const loader = document.getElementById('loader');
+
+    window.addEventListener('touchstart', (e) => {
+      if (window.scrollY === 0) {
+        startY = e.touches[0].clientY;
+      }
+    });
+
+    window.addEventListener('touchmove', (e) => {
+      const distance = e.touches[0].clientY - startY;
+      if (distance > 70 && window.scrollY === 0) {
+        isPulled = true;
+        refreshBar.classList.add('active');
+      }
+    });
+
+    window.addEventListener('touchend', () => {
+      if (isPulled) {
+        loader.classList.add('active');
+        setTimeout(() => {
+          refreshBar.classList.remove('active');
+          loader.classList.remove('active');
+          isPulled = false;
+        }, 1500); // Simula acción de refrescar
+      }
+    });
+  </script>
+
+</body>
+</html>

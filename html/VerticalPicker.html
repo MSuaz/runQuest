@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Vertical Picker</title>
+  <style>
+    body {
+      margin: 0;
+      background: #000;
+      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .vertical-picker {
+      position: relative;
+      width: 77px;
+      height: auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      user-select: none;
+    }
+
+    .label {
+      color: white;
+      font-weight: 600;
+      font-size: 12px;
+      margin-bottom: 12px;
+    }
+
+    .background {
+      position: relative;
+      background: rgba(255,255,255,0.1);
+      border-radius: 12px;
+      backdrop-filter: blur(8px);
+      width: 77px;
+      transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+      overflow: visible;
+      transform-origin: center bottom;
+    }
+
+    .button {
+      width: 77px;
+      height: 77px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+      cursor: pointer;
+    }
+
+    .button img {
+      width: 36px;
+      height: 36px;
+    }
+
+    .button.active {
+      opacity: 1 !important;
+    }
+  </style>
+</head>
+<body>
+
+<div class="vertical-picker" id="verticalPicker">
+  <div class="label">Mode</div>
+  <div class="background" id="background">
+    <!-- Buttons will be added dynamically -->
+  </div>
+</div>
+
+<script>
+  const picker = document.getElementById("verticalPicker");
+  const background = document.getElementById("background");
+
+  const buttonImages = [
+    "https://cdn-icons-png.flaticon.com/512/1828/1828817.png",
+    "https://cdn-icons-png.flaticon.com/512/1828/1828899.png",
+    "https://cdn-icons-png.flaticon.com/512/1828/1828884.png"
+  ];
+
+  let selectedIdx = 0;
+  let state = 'contracted';
+  const buttons = [];
+
+  function createButtons() {
+    buttonImages.forEach((src, i) => {
+      const btn = document.createElement("div");
+      btn.className = "button";
+      btn.dataset.index = i;
+      btn.innerHTML = `<img src="${src}" />`;
+
+      btn.addEventListener("mousedown", expand);
+      btn.addEventListener("click", () => {
+        selectedIdx = i;
+        updateSelection();
+        contract();
+      });
+
+      background.appendChild(btn);
+      buttons.push(btn);
+    });
+    updateSelection();
+  }
+
+  function updateSelection() {
+    buttons.forEach((btn, i) => {
+      btn.classList.toggle("active", i === selectedIdx);
+      btn.style.opacity = state === 'expanded'
+        ? (i === selectedIdx ? "1" : "0.5")
+        : (i === selectedIdx ? "1" : "0");
+      btn.style.transform = state === 'expanded' ? `translateY(${-65 * i}px)` : "translateY(0)";
+    });
+  }
+
+  function expand() {
+    if (state === 'expanded' || state === 'expanding') return;
+    state = 'expanding';
+    background.style.transform = "scale(1)";
+    setTimeout(() => {
+      state = 'expanded';
+    }, 450);
+    updateSelection();
+  }
+
+  function contract() {
+    if (state === 'contracted' || state === 'contracting') return;
+    state = 'contracting';
+    background.style.transform = "scale(0.78)";
+    setTimeout(() => {
+      state = 'contracted';
+      updateSelection();
+    }, 450);
+    updateSelection();
+  }
+
+  picker.addEventListener("mouseleave", () => {
+    if (state === 'expanded') contract();
+  });
+
+  createButtons();
+  contract(); // Start contracted
+</script>
+
+</body>
+</html>

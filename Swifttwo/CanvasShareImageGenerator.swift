@@ -17,11 +17,14 @@ class CanvasShareImageGenerator {
                                     design: ActivityDesign,
                                     cancel: @escaping (() -> Bool),
                                     progress: @escaping ((Float) -> Void),
-                                    completion: @escaping ((_ images: ShareImages) -> Void)) {
+                                    completion: @escaping ((_ images: ShareImages?) -> Void)) {
         makeBaseImage(canvas: canvas) { (p) in
             progress(p * 0.5)
         } completion: { (baseImageInstaStory, baseImageInstaPost, baseImageTwitter) in
-            if cancel() { return }
+            if cancel() { 
+                completion(nil)
+                return 
+            }
 
             let layoutIsFullscreen = design.cutoutShape == .fullScreen
 
@@ -263,19 +266,26 @@ class CanvasShareImageGenerator {
                                     frame: CGRect,
                                     rescale: CGFloat,
                                     opaque: Bool = true,
-                                    completion: @escaping ((_ image: UIImage) -> Void)) {
+                                    completion: @escaping ((_ image: UIImage?) -> Void)) {
         DispatchQueue.global(qos: .userInitiated).async {
             let bigSize = CGSize(width: frame.size.width * rescale,
                                  height: frame.size.height * rescale)
             UIGraphicsBeginImageContextWithOptions(bigSize, opaque, 1)
-            let context = UIGraphicsGetCurrentContext()!
+            guard let context = UIGraphicsGetCurrentContext() else {
+                DispatchQueue.main.async {
+                    completion(nil)
+                }
+                return
+            }
             context.scaleBy(x: rescale, y: rescale)
 
             layer.render(in: context)
 
-            let image = UIGraphicsGetImageFromCurrentImageContext()!
+            let image = UIGraphicsGetImageFromCurrentImageContext()
             UIGraphicsEndImageContext()
-            completion(image)
+            DispatchQueue.main.async {
+                completion(image)
+            }
         }
     }
 

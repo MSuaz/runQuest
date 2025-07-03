@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3-2-1 Go</title>
+    <style>
+        /* General styles */
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #000;
+            color: #fff;
+            overflow: hidden;
+        }
+
+        .map-container {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            background-color: #333;
+        }
+
+        .map {
+            width: 100%;
+            height: 100%;
+            filter: brightness(0.8) contrast(1.2);
+        }
+
+        .user-location {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background-color: #ff0000;
+            border-radius: 50%;
+            border: 2px solid #fff;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(1.5);
+                opacity: 0;
+            }
+        }
+
+        .countdown {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 5rem;
+            font-weight: bold;
+            text-align: center;
+            opacity: 0;
+            animation: fadeInOut 1s linear infinite;
+        }
+
+        @keyframes fadeInOut {
+            0%, 100% {
+                opacity: 0;
+            }
+            50% {
+                opacity: 1;
+            }
+        }
+
+        .control-bar {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+        }
+
+        .control-bar button {
+            background: #444;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .control-bar button:hover {
+            background: #555;
+        }
+    </style>
+</head>
+<body>
+    <!-- Map container -->
+    <div class="map-container">
+        <div id="map" class="map"></div>
+        <div class="user-location" id="userLocation"></div>
+        <div class="countdown" id="countdown">3</div>
+    </div>
+
+    <!-- Control bar -->
+    <div class="control-bar">
+        <button id="startButton">Start</button>
+        <button id="pauseButton">Pause</button>
+        <button id="stopButton">Stop</button>
+    </div>
+
+    <script>
+        // Initialize map (using a placeholder for simplicity)
+        const map = document.getElementById('map');
+        map.style.backgroundImage = 'url("https://via.placeholder.com/800x600")';
+        map.style.backgroundSize = 'cover';
+
+        // Countdown logic
+        const countdownElement = document.getElementById('countdown');
+        let countdownValue = 3;
+        let countdownInterval;
+
+        function startCountdown() {
+            countdownElement.style.opacity = 1;
+            countdownInterval = setInterval(() => {
+                if (countdownValue > 1) {
+                    countdownValue--;
+                    countdownElement.textContent = countdownValue;
+                } else {
+                    clearInterval(countdownInterval);
+                    countdownElement.style.opacity = 0;
+                    console.log('Activity started!');
+                }
+            }, 1000);
+        }
+
+        // Control bar actions
+        document.getElementById('startButton').addEventListener('click', () => {
+            countdownValue = 3;
+            countdownElement.textContent = countdownValue;
+            startCountdown();
+        });
+
+        document.getElementById('pauseButton').addEventListener('click', () => {
+            clearInterval(countdownInterval);
+            console.log('Activity paused!');
+        });
+
+        document.getElementById('stopButton').addEventListener('click', () => {
+            clearInterval(countdownInterval);
+            countdownElement.style.opacity = 0;
+            console.log('Activity stopped!');
+        });
+
+        // Simulate user location update
+        const userLocation = document.getElementById('userLocation');
+        let locationX = 50;
+        let locationY = 50;
+
+        setInterval(() => {
+            locationX += Math.random() * 2 - 1;
+            locationY += Math.random() * 2 - 1;
+            userLocation.style.top = `${locationY}%`;
+            userLocation.style.left = `${locationX}%`;
+        }, 1000);
+    </script>
+</body>
+</html>

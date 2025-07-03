@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Route</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three/examples/js/controls/OrbitControls.js"></script>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
+        canvas {
+            display: block;
+        }
+        .elevation-label {
+            position: absolute;
+            color: white;
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 5px;
+            border-radius: 5px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="minElevationLabel" class="elevation-label"></div>
+    <div id="maxElevationLabel" class="elevation-label"></div>
+    <script>
+        // Scene setup
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        // Orbit controls
+        const controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+
+        // Lighting
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+        scene.add(ambientLight);
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+        directionalLight.position.set(10, 10, 10);
+        scene.add(directionalLight);
+
+        // Route data (mocked for demonstration)
+        const coordinates = [
+            { x: -10, y: 0, z: -10 },
+            { x: -5, y: 5, z: -5 },
+            { x: 0, y: 10, z: 0 },
+            { x: 5, y: 5, z: 5 },
+            { x: 10, y: 0, z: 10 }
+        ];
+
+        // Route path
+        const routeMaterial = new THREE.LineBasicMaterial({ color: 0xffffff });
+        const routeGeometry = new THREE.BufferGeometry().setFromPoints(
+            coordinates.map(coord => new THREE.Vector3(coord.x, coord.y, coord.z))
+        );
+        const routeLine = new THREE.Line(routeGeometry, routeMaterial);
+        scene.add(routeLine);
+
+        // Moving dot
+        const dotGeometry = new THREE.SphereGeometry(0.3, 16, 16);
+        const dotMaterial = new THREE.MeshBasicMaterial({ color: 0xffc663 });
+        const dot = new THREE.Mesh(dotGeometry, dotMaterial);
+        scene.add(dot);
+
+        // Elevation planes
+        const planeMaterial = new THREE.MeshBasicMaterial({
+            color: 0xffffff,
+            transparent: true,
+            opacity: 0.2,
+            side: THREE.DoubleSide
+        });
+        for (let i = 0; i < coordinates.length - 1; i++) {
+            const planeGeometry = new THREE.PlaneGeometry(1, 1);
+            const plane = new THREE.Mesh(planeGeometry, planeMaterial);
+            const start = coordinates[i];
+            const end = coordinates[i + 1];
+            plane.position.set(
+                (start.x + end.x) / 2,
+                -1,
+                (start.z + end.z) / 2
+            );
+            plane.lookAt(new THREE.Vector3(0, 1, 0));
+            scene.add(plane);
+        }
+
+        // Elevation labels
+        const minElevationLabel = document.getElementById('minElevationLabel');
+        const maxElevationLabel = document.getElementById('maxElevationLabel');
+        const minElevation = Math.min(...coordinates.map(coord => coord.y));
+        const maxElevation = Math.max(...coordinates.map(coord => coord.y));
+        const minElevationPoint = coordinates.find(coord => coord.y === minElevation);
+        const maxElevationPoint = coordinates.find(coord => coord.y === maxElevation);
+
+        function updateLabel(label, point, text) {
+            const vector = new THREE.Vector3(point.x, point.y, point.z);
+            vector.project(camera);
+            const x = (vector.x * 0.5 + 0.5) * window.innerWidth;
+            const y = (-vector.y * 0.5 + 0.5) * window.innerHeight;
+            label.style.transform = `translate(-50%, -50%) translate(${x}px, ${y}px)`;
+            label.textContent = text;
+            label.style.display = 'block';
+        }
+
+        // Animation
+        let progress = 0;
+        function animate() {
+            requestAnimationFrame(animate);
+
+            // Move dot along the route
+            progress += 0.01;
+            if (progress > 1) progress = 0;
+            const index = Math.floor(progress * (coordinates.length - 1));
+            const start = coordinates[index];
+            const end = coordinates[index + 1];
+            const t = progress * (coordinates.length - 1) - index;
+            dot.position.set(
+                start.x + t * (end.x - start.x),
+                start.y + t * (end.y - start.y),
+                start.z + t * (end.z - start.z)
+            );
+
+            // Update elevation labels
+            updateLabel(minElevationLabel, minElevationPoint, `▼ ${minElevation}m`);
+            updateLabel(maxElevationLabel, maxElevationPoint, `▲ ${maxElevation}m`);
+
+            controls.update();
+            renderer.render(scene, camera);
+        }
+
+        // Camera setup
+        camera.position.set(0, 20, 30);
+        controls.target.set(0, 5, 0);
+        controls.update();
+
+        animate();
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+</body>
+</html>

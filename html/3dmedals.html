@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Medal Viewer</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.155.0/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three/examples/js/controls/OrbitControls.js"></script>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background: linear-gradient(to bottom, #e0e0e0, #b0b0b0); /* Neutral background */
+            font-family: Arial, sans-serif;
+        }
+        #placeholder {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: black;
+            font-size: 1.5rem;
+            opacity: 0.5;
+        }
+    </style>
+</head>
+<body>
+    <!-- Placeholder div shown while loading -->
+    <div id="placeholder">Loading medal...</div>
+    <script>
+        // Scene setup
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        // Lighting setup
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.6); // Soft ambient light
+        scene.add(ambientLight);
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8); // Strong directional light
+        directionalLight.position.set(5, 10, 7.5);
+        scene.add(directionalLight);
+
+        // Orbit controls for camera interaction
+        const controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+
+        // Create mock 3D medal using geometries
+        const medalGroup = new THREE.Group();
+
+        // Medal base (cylinder)
+        const cylinderGeometry = new THREE.CylinderGeometry(5, 5, 1, 32);
+        const cylinderMaterial = new THREE.MeshStandardMaterial({ color: 0xffd700, metalness: 0.8, roughness: 0.4 });
+        const medalBase = new THREE.Mesh(cylinderGeometry, cylinderMaterial);
+        medalGroup.add(medalBase);
+
+        // Medal ring (torus)
+        const torusGeometry = new THREE.TorusGeometry(3.5, 0.5, 16, 100);
+        const torusMaterial = new THREE.MeshStandardMaterial({ color: 0xffd700, metalness: 0.8, roughness: 0.4 });
+        const medalRing = new THREE.Mesh(torusGeometry, torusMaterial);
+        medalRing.rotation.x = Math.PI / 2; // Rotate to align with the cylinder
+        medalRing.position.y = 0.6; // Position above the cylinder
+        medalGroup.add(medalRing);
+
+        scene.add(medalGroup);
+
+        // Camera setup
+        camera.position.set(0, 10, 20);
+        controls.target.set(0, 0, 0);
+        controls.update();
+
+        // Placeholder logic
+        const placeholder = document.getElementById('placeholder');
+
+        // Simulate loading delay and remove placeholder
+        setTimeout(() => {
+            placeholder.style.display = 'none';
+        }, 500); // Simulated loading time
+
+        // Animation loop
+        const animate = () => {
+            requestAnimationFrame(animate);
+
+            // Rotate the medal
+            medalGroup.rotation.y += 0.01;
+
+            controls.update();
+            renderer.render(scene, camera);
+        };
+        animate();
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+</body>
+</html>

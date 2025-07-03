@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canvas Share Image Generator</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #000;
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        canvas {
+            border: 1px solid #fff;
+            display: block;
+        }
+        #controls {
+            position: absolute;
+            bottom: 20px;
+            display: flex;
+            gap: 10px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        #progress {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #444;
+            border-radius: 5px;
+            overflow: hidden;
+            width: 80%;
+            height: 20px;
+            display: none;
+        }
+        #progress-bar {
+            height: 100%;
+            background-color: #0f0;
+            width: 0%;
+            transition: width 0.3s;
+        }
+        #error {
+            position: absolute;
+            top: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: red;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas" width="1024" height="1024"></canvas>
+    <div id="controls">
+        <button id="generate">Generate Image</button>
+        <button id="download" disabled>Download</button>
+    </div>
+    <div id="progress">
+        <div id="progress-bar"></div>
+    </div>
+    <div id="error">Error: Unable to generate the image.</div>
+    <script>
+        class CanvasShareImageGenerator {
+            static backgroundRouteAlpha = 0.1;
+            static rescale = 4;
+
+            static generateShareImages(canvas, design, progress, completion) {
+                const ctx = canvas.getContext('2d');
+                const width = canvas.width;
+                const height = canvas.height;
+
+                // Clear canvas
+                ctx.fillStyle = design.palette.backgroundColor || '#000';
+                ctx.fillRect(0, 0, width, height);
+
+                // Draw user image
+                if (design.userImage) {
+                    const userImageFrame = {
+                        x: design.photoOffset.x,
+                        y: design.photoOffset.y,
+                        width: width * design.photoZoom,
+                        height: height * design.photoZoom
+                    };
+                    ctx.drawImage(design.userImage, userImageFrame.x, userImageFrame.y, userImageFrame.width, userImageFrame.height);
+                }
+
+                // Add text overlay
+                ctx.fillStyle = '#fff';
+                ctx.font = 'bold 48px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('Earned on ' + design.earnedDate, width / 2, height - 50);
+
+                // Simulate progress
+                progress(1);
+                completion(canvas.toDataURL());
+            }
+        }
+
+        const canvas = document.getElementById('canvas');
+        const generateButton = document.getElementById('generate');
+        const downloadButton = document.getElementById('download');
+        const progressBar = document.getElementById('progress-bar');
+        const progressContainer = document.getElementById('progress');
+        const errorContainer = document.getElementById('error');
+
+        const design = {
+            palette: { backgroundColor: '#333' },
+            userImage: new Image(),
+            photoZoom: 1.2,
+            photoOffset: { x: 50, y: 50 },
+            earnedDate: '2023-10-01'
+        };
+
+        let generatedImageData = null;
+
+        // Use a valid placeholder image URL
+        design.userImage.src = 'https://cdn.runapp.run/uploads/runadic/rabbit_book.jpeg'; // Corrected URL
+        design.userImage.onload = () => {
+            generateButton.addEventListener('click', () => {
+                progressContainer.style.display = 'block';
+                errorContainer.style.display = 'none';
+                CanvasShareImageGenerator.generateShareImages(
+                    canvas,
+                    design,
+                    (progress) => {
+                        progressBar.style.width = `${progress * 100}%`;
+                    },
+                    (imageData) => {
+                        if (imageData) {
+                            console.log('Image Generated:', imageData);
+                            generatedImageData = imageData;
+                            downloadButton.disabled = false;
+                            progressContainer.style.display = 'none';
+                        } else {
+                            errorContainer.style.display = 'block';
+                            progressContainer.style.display = 'none';
+                        }
+                    }
+                );
+            });
+
+            downloadButton.addEventListener('click', () => {
+                if (generatedImageData) {
+                    const link = document.createElement('a');
+                    link.download = 'share_image.png';
+                    link.href = generatedImageData;
+                    link.click();
+                }
+            });
+        };
+
+        design.userImage.onerror = () => {
+            console.error('Failed to load the placeholder image.');
+        };
+    </script>
+</body>
+</html>
