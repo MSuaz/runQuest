@@ -1,231 +1,254 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Farewell to Swift - Team Challenge</title>
+  <meta charset="UTF-8">
+  <title>✦ StarPath Protocol: Route Uplink ✦</title>
   <style>
     body {
-      background: #0b0b0c;
-      color: #f5f5f5;
-      font-family: 'Segoe UI', Tahoma, sans-serif;
-      margin: 0;
+      background: #000;
+      color: #00ffcc;
+      font-family: 'Courier New', monospace;
+      padding: 2rem;
+    }
+    h1, h2 {
+      color: #00ffff;
+    }
+    .terminal-box {
+      border: 1px solid #00ffcc;
+      padding: 1.5rem;
+      margin-top: 2rem;
+      background-color: #001f1f;
+    }
+    .glow {
+      text-shadow: 0 0 5px #00ffff, 0 0 10px #00ffff;
+    }
+    pre {
+      background-color: #00000033;
       padding: 1rem;
-    }
-
-    h1 {
-      text-align: center;
-      color: #ff6f61;
-      font-size: 2rem;
-      margin-bottom: 1.5rem;
-    }
-
-    section {
-      background: #1a1a1d;
-      margin-bottom: 2rem;
-      border-radius: 10px;
-      padding: 1rem 1.2rem;
-      box-shadow: 0 4px 12px rgba(255, 111, 97, 0.3);
-    }
-
-    h2 {
-      color: #ff857a;
-      margin-top: 0;
-      font-size: 1.4rem;
-    }
-
-    .card {
-      background: #2a2a2e;
-      border-radius: 8px;
-      padding: 0.8rem 1rem;
-      margin: 0.6rem 0;
-    }
-
-    .card h3 {
-      margin: 0 0 0.5rem;
-      font-size: 1.05rem;
-      color: #ffd1cb;
-    }
-
-    .card a {
-      text-decoration: none;
-      color: #00e0ff;
-      background: #222;
-      padding: 0.4rem 0.7rem;
-      border-radius: 6px;
-      display: inline-block;
-      margin-top: 0.3rem;
-      transition: background 0.2s ease;
-    }
-
-    .card a:hover {
-      background: #00e0ff;
-      color: #000;
-    }
-
-    .video-container {
-      position: relative;
-      width: 100%;
-      max-width: 800px;
-      margin: 2rem auto;
-      border-radius: 10px;
-      overflow: hidden;
-      box-shadow: 0 4px 12px rgba(255, 111, 97, 0.3);
-    }
-
-    .video-container video {
-      width: 100%;
-      height: auto;
-      display: block;
-      object-fit: cover;
+      overflow-x: auto;
     }
   </style>
 </head>
-
 <body>
-  <h1>Farewell to Swift - Team Challenge</h1>
+  <h1 class="glow">✦ StarPath Protocol: Route Uplink ✦</h1>
 
-  <section>
-    <div class="card">
-      <h3>3-2-1 Go Animation</h3><a
-        href="https://github.com/Any-Distance/any-distance-ios/blob/main/ADAC/ADAC/Screens/Recording/RecordingView.swift#L560"
-        target="_blank">View on GitHub</a>
-    </div>
-    <div class="video-container">
-      <video src="https://d3gbt09tpt7knb.cloudfront.net/any-distance-goes-open-source/2.mp4#t=0.1" controls></video>
-    </div>
-    <div class="card">
-      <h3>Goal Picker</h3><a
-        href="https://github.com/Any-Distance/any-distance-ios/blob/main/ADAC/ADAC/Screens/Recording/RecordingGoalSelectionView.swift"
-        target="_blank">View on GitHub</a>
-    </div>
-    <div class="video-container">
-      <video src="https://d3gbt09tpt7knb.cloudfront.net/any-distance-goes-open-source/3.mp4#t=0.1" controls></video>
-    </div>
-    <div class="card">
-      <h3>3D Medals</h3><a
-        href="https://github.com/Any-Distance/any-distance-ios/blob/main/ADAC/ADAC/View%20-%20UIKit/AR/Collectible3DView.swift"
-        target="_blank">View on GitHub</a>
-    </div>
-    <div class="video-container">
-      <video src="https://d3gbt09tpt7knb.cloudfront.net/any-distance-goes-open-source/4.mp4#t=0.1" controls></video>
-    </div>
-    <div class="card">
-      <h3>3D Sneakers</h3><a
-        href="https://github.com/Any-Distance/any-distance-ios/blob/main/ADAC/ADAC/View%20-%20UIKit/AR/Gear3DView.swift"
-        target="_blank">View on GitHub</a>
-    </div>
-     <div class="video-container">
-      <video src="https://d3gbt09tpt7knb.cloudfront.net/any-distance-goes-open-source/5.mp4#t=0.1" controls></video>
-    </div>
-    
-    <div class="card">
-      <h3>Custom MapKit Overlay Renderer</h3><a
-        href="https://github.com/Any-Distance/any-distance-ios/blob/main/ADAC/ADAC/Screens/Progress/ActivityProgressView.swift#L37"
-        target="_blank">View on GitHub</a>
-    </div>
-      <div class="video-container">
-      <video src="https://d3gbt09tpt7knb.cloudfront.net/any-distance-goes-open-source/9.mp4#t=0.1" preload="auto"
-        controlslist="nodownload" disablepictureinpicture="" muted="" loop="" playsinline=""
-         controls></video>
-    </div>
-    <div class="card">
-      <h3>3D route</h3><a
-        href="https://github.com/Any-Distance/any-distance-ios/blob/main/ADAC/ADAC/Route%20Rendering/RouteScene.swift"
-        target="_blank">View on GitHub</a>
-    </div>
+  <div class="terminal-box">
+    <h2>📜 Mission Briefing</h2>
+    <p>
+      It is the year 3057. The Stellar Network is down. Your directive is to use forbidden 
+      MapKit magic to gradually re-ignite the ancient hyperspace lanes. 
+      Render with precision. Animate with discipline. Restore balance to the stars.
+    </p>
 
-    <div class="video-container">
-      <video src="https://d3gbt09tpt7knb.cloudfront.net/any-distance-goes-open-source/1.mp4#t=0.1" preload="auto"
-        controlslist="nodownload" disablepictureinpicture="" muted="" loop="" playsinline=""
-        poster="https://d3gbt09tpt7knb.cloudfront.net/any-distance-goes-open-source/1-thumbnail.jpg" controls></video>
-    </div>
+    <h2>🎯 Mission Objectives</h2>
+    <ul>
+      <li>Use <code>CADisplayLink</code> to animate polyline drawing.</li>
+      <li>Create a custom <code>MKOverlayRenderer</code> with <code>strokeProgress</code>.</li>
+      <li>Render route paths gradually — like energy flowing through space.</li>
+      <li>React to zoom levels with adaptive line width.</li>
+    </ul>
 
+ 
+    <h2>💻 Source Code: Overlay Renderer</h2>
+    <pre>
+fileprivate struct MapView: UIViewRepresentable  {
+    @ObservedObject var model: ActivityProgressGraphModel
+    @Binding var selectedClusterIdx: Int
 
+    func makeUIView(context: Context) -> MKMapView {
+        let mapView = MKMapView()
+        mapView.mapType = .mutedStandard
+        mapView.preferredConfiguration.elevationStyle = .flat
+        mapView.isPitchEnabled = false
+        mapView.showsUserLocation = false
+        mapView.showsBuildings = false
+        mapView.overrideUserInterfaceStyle = .dark
+        mapView.pointOfInterestFilter = MKPointOfInterestFilter.excludingAll
+        mapView.setUserTrackingMode(.none, animated: false)
+        mapView.delegate = context.coordinator
+        mapView.alpha = 0.0
+        context.coordinator.mkView = mapView
 
-    <div class="card">
-      <h3>Access Code Field</h3><a
-        href="https://github.com/Any-Distance/any-distance-ios/blob/main/ADAC/ADAC/SwiftUI%20Utilities/AccessCodeField.swift"
-        target="_blank">View on GitHub</a>
-    </div>
+        model.$coordinateClusters
+            .receive(on: DispatchQueue.main)
+            .sink { _ in
+                selectedClusterIdx = 0
+            }.store(in: &context.coordinator.subscribers)
 
-    <div class="video-container">
-      <video src="https://d3gbt09tpt7knb.cloudfront.net/any-distance-goes-open-source/8.mp4#t=0.1" preload="auto"
-        controlslist="nodownload" disablepictureinpicture="" muted="" loop="" playsinline=""
-         controls></video>
-    </div>
-    <div class="card">
-      <h3>Fake UIAlertView</h3><a
-        href="https://github.com/Any-Distance/any-distance-ios/blob/main/ADAC/ADAC/Screens/Onboarding/Health%20Permissions/AppleHealthPermissionsView.swift"
-        target="_blank">View on GitHub</a>
-    </div>
-     <div class="video-container">
-      <video src="https://d3gbt09tpt7knb.cloudfront.net/any-distance-goes-open-source/8.mp4#t=0.1" preload="auto"
-        controlslist="nodownload" disablepictureinpicture="" muted="" loop="" playsinline=""
-        poster="https://d3gbt09tpt7knb.cloudfront.net/any-distance-goes-open-source/10-thumbnail.jpg" controls></video>
-    </div>
-    <div class="card">
-      <h3>Health Connect Animation (2021)</h3><a
-        href="https://github.com/Any-Distance/any-distance-ios/blob/main/ADAC/ADAC/Screens/Onboarding/Sync%20Animation/SyncAnimationView.swift"
-        target="_blank">View on GitHub</a>
-    </div>
-      <div class="video-container">
-      <video src="https://d3gbt09tpt7knb.cloudfront.net/any-distance-goes-open-source/11.mp4#t=0.1" preload="auto"
-        controlslist="nodownload" disablepictureinpicture="" muted="" loop="" playsinline=""
-         controls></video>
-    </div>
-    <div class="card">
-      <h3>Recent Photo Picker</h3><a
-        href="https://github.com/Any-Distance/any-distance-ios/blob/main/ADAC/ADAC/View%20-%20UIKit/EditorControls/RecentPhotoPicker.swift"
-        target="_blank">View on GitHub</a>
-    </div>
-      <div class="video-container">
-      <video src="https://d3gbt09tpt7knb.cloudfront.net/any-distance-goes-open-source/13.mp4#t=0.1" preload="auto"
-        controlslist="nodownload" disablepictureinpicture="" muted="" loop="" playsinline=""
-         controls></video>
-    </div>
-    <div class="card">
-      <h3>Vertical Picker</h3><a
-        href="https://github.com/Any-Distance/any-distance-ios/blob/main/ADAC/ADAC/View%20-%20UIKit/EditorControls/VerticalPicker.swift"
-        target="_blank">View on GitHub</a>
-    </div>
-      <div class="video-container">
-      <video src="https://d3gbt09tpt7knb.cloudfront.net/any-distance-goes-open-source/14.mp4#t=0.1" preload="auto"
-        controlslist="nodownload" disablepictureinpicture="" muted="" loop="" playsinline=""
-         controls></video>
-    </div>
-    <div class="card">
-      <h3>Share Asset Generation</h3><a
-        href="https://github.com/Any-Distance/any-distance-ios/blob/main/ADAC/ADAC/Other/Share%20Asset%20Generators/CanvasShareImageGenerator.swift"
-        target="_blank">View on GitHub</a>
-    </div>
-      <div class="video-container">
-      <video src="https://d3gbt09tpt7knb.cloudfront.net/any-distance-goes-open-source/15.mp4#t=0.1" preload="auto"
-        controlslist="nodownload" disablepictureinpicture="" muted="" loop="" playsinline=""
-         controls></video>
-    </div>
-    <div class="card">
-      <h3>Header With Progressive Blur</h3><a
-        href="https://github.com/Any-Distance/any-distance-ios/blob/main/ADAC/ADAC/Screens/Profile/ProfileView.swift#L1456"
-        target="_blank">View on GitHub</a>
-    </div>
-      <div class="video-container">
-      <video src="https://d3gbt09tpt7knb.cloudfront.net/any-distance-goes-open-source/16.mp4#t=0.1" preload="auto"
-        controlslist="nodownload" disablepictureinpicture="" muted="" loop="" playsinline=""
-         controls></video>
-    </div>
-    <div class="card">
-      <h3>Custom Refresh Control</h3><a
-        href="https://github.com/Any-Distance/any-distance-ios/blob/main/ADAC/ADAC/SwiftUI%20Utilities/ReadableScrollView.swift"
-        target="_blank">View on GitHub</a>
-    </div>
-      <div class="video-container">
-      <video src="https://d3gbt09tpt7knb.cloudfront.net/any-distance-goes-open-source/17.mp4#t=0.1" preload="auto"
-        controlslist="nodownload" disablepictureinpicture="" muted="" loop="" playsinline=""
-        poster="https://d3gbt09tpt7knb.cloudfront.net/any-distance-goes-open-source/17-thumbnail.jpg" controls></video>
-    </div>
-  </section>
+        model.$viewVisible
+            .receive(on: DispatchQueue.main)
+            .sink { visible in
+                if visible {
+                    addPolylines(mapView)
+                } else {
+                    mapView.removeOverlays(mapView.overlays)
+                }
+            }.store(in: &context.coordinator.subscribers)
+
+        return mapView
+    }
+
+    private func addPolylines(_ mapView: MKMapView) {
+        if model.coordinateClusters.isEmpty {
+            return
+        }
+
+        Task(priority: .userInitiated) {
+            mapView.removeOverlays(mapView.overlays)
+            model.coordinateClusters[selectedClusterIdx].coordinates.forEach { coordinates in
+                coordinates.withUnsafeBufferPointer { pointer in
+                    if let base = pointer.baseAddress {
+                        let newPolyline = MKPolyline(coordinates: base, count: coordinates.count)
+                        mapView.addOverlay(newPolyline)
+                    }
+                }
+            }
+        }
+    }
+
+    func updateUIView(_ uiView: MKMapView, context: Context) {
+        if model.coordinateClusters.count > selectedClusterIdx {
+            addPolylines(uiView)
+            let rect = model.coordinateClusters[selectedClusterIdx].rect
+            if rect != context.coordinator.displayedRect {
+                let edgePadding = UIEdgeInsets(top: 180.0,
+                                               left: 25.0,
+                                               bottom: UIScreen.main.bounds.height * 0.4,
+                                               right: 25.0)
+                uiView.setVisibleMapRect(rect,
+                                         edgePadding: edgePadding,
+                                         animated: context.coordinator.hasSetInitialRegion)
+                context.coordinator.displayedRect = rect
+                context.coordinator.resetAnimationTimer()
+                context.coordinator.hasSetInitialRegion = true
+            }
+
+            context.coordinator.shouldAnimateIn = true
+        } else if model.coordinateClusters.isEmpty {
+            uiView.removeOverlays(uiView.overlays)
+            if context.coordinator.hasSetInitialRegion && model.hasPerformedInitialLoad {
+                context.coordinator.shouldAnimateIn = true
+            }
+        }
+    }
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator(parent: self)
+    }
+
+    final class Coordinator: NSObject, MKMapViewDelegate {
+        private var parent: MapView
+        var mkView: MKMapView?
+        var subscribers: Set<AnyCancellable> = []
+        var hasSetInitialRegion: Bool = false
+        var hasInitialFinishedRender: Bool = false
+        var displayedRect: MKMapRect?
+        var shouldAnimateIn: Bool = false
+        var willRender: Bool = false
+        private lazy var displayLink = CADisplayLink(target: self, selector: #selector(displayLinkFire))
+        private var polylineProgress: CGFloat = 0
+        private let lineColor = UIColor.white.withAlphaComponent(0.6)
+
+        init(parent: MapView) {
+            self.parent = parent
+            super.init()
+
+            self.displayLink.add(to: .main, forMode: .common)
+            self.displayLink.add(to: .main, forMode: .tracking)
+            self.displayLink.isPaused = false
+        }
+
+        func resetAnimationTimer() {
+            polylineProgress = -0.05
+            displayLinkFire()
+            displayLink.isPaused = true
+        }
+
+        @objc func displayLinkFire() {
+            if polylineProgress <= 1 {
+                for overlay in mkView!.overlays {
+                    if !overlay.boundingMapRect.intersects(mkView?.visibleMapRect ?? MKMapRect()) {
+                        continue
+                    }
+
+                    if let polylineRenderer = mkView!.renderer(for: overlay) as? MKPolylineRenderer {
+                        polylineRenderer.strokeEnd = RouteScene.easeOutQuad(x: polylineProgress).clamped(to: 0...1)
+                        polylineRenderer.strokeColor = polylineProgress <= 0.01 ? .clear : lineColor
+                        polylineRenderer.blendMode = .destinationAtop
+                        polylineRenderer.setNeedsDisplay()
+                    }
+                }
+                
+                polylineProgress += 0.01
+            }
+        }
+
+        func lineWidth(for mapView: MKMapView) -> CGFloat {
+            let visibleWidth = mapView.visibleMapRect.width
+            return CGFloat(-0.00000975 * visibleWidth + 2.7678715).clamped(to: 1.5...2.5)
+        }
+
+        func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
+            let stroke = lineWidth(for: mapView)
+            if let routePolyline = overlay as? MKPolyline {
+                let renderer = MKPolylineRenderer(polyline: routePolyline)
+                renderer.strokeColor = displayLink.isPaused ? .clear : lineColor
+                renderer.lineWidth = stroke
+                renderer.strokeEnd = displayLink.isPaused ? 0 : 1
+                renderer.blendMode = .destinationAtop
+                renderer.lineJoin = .round
+                renderer.lineCap = .round
+                return renderer
+            }
+
+            return MKOverlayRenderer()
+        }
+
+        func mapViewDidChangeVisibleRegion(_ mapView: MKMapView) {
+            let stroke = lineWidth(for: mapView)
+            for overlay in mkView!.overlays {
+                if !overlay.boundingMapRect.intersects(mkView?.visibleMapRect ?? MKMapRect()) {
+                    continue
+                }
+
+                if let polylineRenderer = mkView!.renderer(for: overlay) as? MKPolylineRenderer {
+                    polylineRenderer.lineWidth = stroke
+                }
+            }
+        }
+
+        func mapViewWillStartRenderingMap(_ mapView: MKMapView) {
+            willRender = true
+        }
+
+        func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
+            if willRender {
+                return
+            }
+
+            displayLink.isPaused = false
+        }
+
+        func mapViewDidFinishRenderingMap(_ mapView: MKMapView, fullyRendered: Bool) {
+            if fullyRendered {
+                displayLink.isPaused = false
+                willRender = false
+
+                if shouldAnimateIn {
+                    UIView.animate(withDuration: 0.3) {
+                        mapView.alpha = 1.0
+                    }
+                    shouldAnimateIn = false
+                }
+            }
+        }
+    }
+}
+    </pre>
+  </div>
+
+  <footer style="margin-top:2rem; font-size:0.9rem;">
+    <p>©3057 Galactic Cartographers Union · Protocol Uplink v1.0</p>
+  </footer>
 </body>
-
 </html>
